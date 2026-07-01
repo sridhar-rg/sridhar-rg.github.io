@@ -90,12 +90,27 @@
       revealObserver.unobserve(entry.target);
     });
   }, {
-    threshold: 0.1,
+    // threshold 0 fires as soon as any part of the target enters the
+    // viewport — a percentage-based threshold can mathematically never
+    // be met for elements much taller than the viewport (e.g. a full
+    // article body), which would otherwise leave them stuck invisible.
+    threshold: 0,
     rootMargin: '0px 0px -40px 0px'
   });
 
   document.querySelectorAll('.reveal').forEach(el => {
     revealObserver.observe(el);
+  });
+
+  // Safety net: if anything is still unrevealed a couple seconds after
+  // load (a missed observation, an element resized after observe, etc.),
+  // force it visible rather than leaving content permanently hidden.
+  window.addEventListener('load', () => {
+    setTimeout(() => {
+      document.querySelectorAll('.reveal:not(.visible)').forEach(el => {
+        el.classList.add('visible');
+      });
+    }, 2500);
   });
 
 
