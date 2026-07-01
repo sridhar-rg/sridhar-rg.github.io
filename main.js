@@ -1,6 +1,7 @@
 /* ═══════════════════════════════════════════════════════════
    SRIDHAR RANGANATHAN — Site JavaScript
    Scroll reveal · Counter animation · Nav effects · Mobile menu
+   Shared across index.html and case-studies/*.html
    ═══════════════════════════════════════════════════════════ */
 
 (function () {
@@ -9,55 +10,61 @@
   // ─── Nav: scroll effect ───────────────────────────────────
   const nav = document.getElementById('nav');
 
-  window.addEventListener('scroll', () => {
-    nav.classList.toggle('scrolled', window.scrollY > 24);
-  }, { passive: true });
+  if (nav) {
+    window.addEventListener('scroll', () => {
+      nav.classList.toggle('scrolled', window.scrollY > 24);
+    }, { passive: true });
+  }
 
 
   // ─── Nav: mobile toggle ───────────────────────────────────
   const navToggle = document.getElementById('navToggle');
   const navLinks  = document.getElementById('navLinks');
 
-  navToggle.addEventListener('click', () => {
-    const isOpen = navLinks.classList.toggle('open');
-    navToggle.classList.toggle('open', isOpen);
-    navToggle.setAttribute('aria-expanded', isOpen);
-  });
-
-  navLinks.querySelectorAll('a').forEach(link => {
-    link.addEventListener('click', () => {
-      navLinks.classList.remove('open');
-      navToggle.classList.remove('open');
-      navToggle.setAttribute('aria-expanded', 'false');
+  if (nav && navToggle && navLinks) {
+    navToggle.addEventListener('click', () => {
+      const isOpen = navLinks.classList.toggle('open');
+      navToggle.classList.toggle('open', isOpen);
+      navToggle.setAttribute('aria-expanded', isOpen);
     });
-  });
 
-  document.addEventListener('click', (e) => {
-    if (!nav.contains(e.target)) {
-      navLinks.classList.remove('open');
-      navToggle.classList.remove('open');
-      navToggle.setAttribute('aria-expanded', 'false');
-    }
-  });
+    navLinks.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => {
+        navLinks.classList.remove('open');
+        navToggle.classList.remove('open');
+        navToggle.setAttribute('aria-expanded', 'false');
+      });
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!nav.contains(e.target)) {
+        navLinks.classList.remove('open');
+        navToggle.classList.remove('open');
+        navToggle.setAttribute('aria-expanded', 'false');
+      }
+    });
+  }
 
 
   // ─── Nav: active link highlight on scroll ─────────────────
   const sections = Array.from(document.querySelectorAll('section[id]'));
   const navItems = Array.from(document.querySelectorAll('.nav__links a'));
 
-  const sectionObserver = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        const id = entry.target.getAttribute('id');
-        navItems.forEach(link => {
-          const isActive = link.getAttribute('href') === `#${id}`;
-          link.classList.toggle('active', isActive);
-        });
-      }
-    });
-  }, { threshold: 0.4 });
+  if (sections.length && navItems.length) {
+    const sectionObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const id = entry.target.getAttribute('id');
+          navItems.forEach(link => {
+            const isActive = link.getAttribute('href') === `#${id}`;
+            link.classList.toggle('active', isActive);
+          });
+        }
+      });
+    }, { threshold: 0.4 });
 
-  sections.forEach(s => sectionObserver.observe(s));
+    sections.forEach(s => sectionObserver.observe(s));
+  }
 
 
   // ─── Scroll reveal ────────────────────────────────────────
@@ -144,5 +151,31 @@
       window.scrollTo({ top, behavior: 'smooth' });
     });
   });
+
+
+  // ─── Case study pages: "More Case Studies" grid ───────────
+  // Reads window.CASE_STUDIES (defined in case-studies-data.js) and
+  // renders every entry except the current page into #moreCaseStudies.
+  const moreGrid = document.getElementById('moreCaseStudies');
+
+  if (moreGrid && Array.isArray(window.CASE_STUDIES)) {
+    const currentSlug = moreGrid.dataset.currentSlug;
+    const others = window.CASE_STUDIES.filter(cs => cs.slug !== currentSlug);
+
+    moreGrid.innerHTML = others.map(cs => `
+      <a class="more-case-card reveal" href="${cs.slug}.html">
+        <div class="more-case-card__img-wrap">
+          <img src="${cs.image}" alt="${cs.imageAlt}" loading="lazy" />
+        </div>
+        <div class="more-case-card__body">
+          <div class="more-case-card__tag">${cs.tag}</div>
+          <h3 class="more-case-card__title">${cs.title}</h3>
+          <p class="more-case-card__hook">${cs.hook}</p>
+        </div>
+      </a>
+    `).join('');
+
+    moreGrid.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+  }
 
 })();

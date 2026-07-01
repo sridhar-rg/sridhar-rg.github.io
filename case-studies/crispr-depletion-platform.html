@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="A general-purpose CRISPR depletion platform for solving whole-genome sequencing's wasted-coverage problem across metagenomics, agri-genomics, and gene regulation." />
+  <title>CRISPR-Based Depletion Platform | Sridhar Ranganathan</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+
+  <!-- ═══════════════════════ NAVIGATION ═══════════════════════ -->
+  <nav class="nav" id="nav">
+    <div class="nav__inner">
+      <a class="nav__logo" href="../index.html">SR</a>
+      <ul class="nav__links" id="navLinks">
+        <li><a href="../index.html#about">About</a></li>
+        <li><a href="../index.html#highlights">Highlights</a></li>
+        <li><a href="../index.html#experience">Experience</a></li>
+        <li><a href="index.html" class="active">Featured Work</a></li>
+        <li><a href="../index.html#skills">Skills</a></li>
+        <li><a href="../publications/index.html">Publications</a></li>
+        <li><a href="../index.html#blog">Blog</a></li>
+        <li><a href="../index.html#contact">Contact</a></li>
+      </ul>
+      <button class="nav__toggle" id="navToggle" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ═══════════════════════ ARTICLE HEADER ═══════════════════════ -->
+  <header class="article__header">
+    <div class="container">
+      <a href="index.html" class="article__back reveal">&larr; Back to Case Studies</a>
+      <div class="reveal">
+        <div class="article__meta">
+          <span class="tag tag--accent">Jumpcode Genomics</span>
+          <span class="article__date">Platform Architecture</span>
+          <span class="article__read-time">7 min read</span>
+        </div>
+        <h1 class="article__title">CRISPR-Based Depletion Platform</h1>
+        <p class="article__subtitle">Whole-genome sequencing has a wasted-coverage problem that shows up, in slightly different clothes, in metagenomics, agricultural genomics, and gene-regulation research. One depletion framework, retargeted, addresses all three.</p>
+        <div class="article__stats">
+          <span class="project-card__stat">Metagenomics</span>
+          <span class="project-card__stat">Agri-genomics</span>
+          <span class="project-card__stat">Gene regulation</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="article__body">
+    <div class="container">
+
+      <figure class="article__hero-image reveal">
+        <img class="article__hero-img" src="../assets/images/crispr-depletion.png" alt="Diagram of a general-purpose CRISPR depletion platform" />
+      </figure>
+
+      <div class="article__layout">
+        <aside class="article__toc reveal">
+          <div class="article__toc-label">On This Page</div>
+          <ol>
+            <li><a href="#problem">The Same Problem, Wearing Three Different Costumes</a></li>
+            <li><a href="#approach">The Scientific Approach: One Framework, Three Targets</a></li>
+            <li><a href="#pipeline">Building a Platform, Not a One-Off Assay</a></li>
+            <li><a href="#applications">Three Applications, One Design Loop</a></li>
+            <li><a href="#impact">Why This Matters as a Platform Decision</a></li>
+          </ol>
+        </aside>
+
+        <div class="article__content reveal">
+
+          <h2 id="problem">The Same Problem, Wearing Three Different Costumes</h2>
+          <p>Whole-genome sequencing's defining strength &mdash; it captures everything, indiscriminately &mdash; is also its most persistent inefficiency. Most research questions don't actually need "everything." They need a specific fraction of the genome, and WGS spends the same sequencing budget on the 95% you don't care about as it does on the 5% you do. By the time I'd worked through the pandemic-preparedness, newborn-screening, and single-cell projects described elsewhere on this site, a pattern was hard to ignore: three superficially unrelated fields were all hitting a version of the exact same wall.</p>
+
+          <p>In metagenomics, host DNA dominates a clinical or environmental sample and dilutes the microbial signal researchers actually want &mdash; a problem for detecting antibiotic-resistance genes or assembling low-abundance or novel pathogens, where the organism of interest might be a rounding error against a backdrop of human or environmental DNA. In agricultural genomics, plant breeders doing low-pass WGS or genotyping-by-sequencing typically work at under 3&times; coverage, on genomes that are frequently polyploid, large, and only 5% functional &mdash; with repetitive elements consuming 45&ndash;70% of the genome and crowding out the reads that would actually resolve a variant of interest. Whole-exome sequencing is a partial answer, but it requires designing and synthesizing capture probes, with the cost and lead time that implies. In gene-regulation research, only 10&ndash;20% of the genome is regulatory at all, and which 10&ndash;20% is highly cell-type- and condition-dependent &mdash; which makes a fixed, probe-based capture panel a poor fit, since the "interesting" region of the genome keeps moving depending on what experiment you're running.</p>
+
+          <p>Three fields, three vocabularies, one shared shape: a small, valuable fraction of the genome buried under a large, well-characterized, unwanted majority.</p>
+
+          <h2 id="approach">The Scientific Approach: One Framework, Three Targets</h2>
+          <p>The response to a pattern like that shouldn't be three separate one-off assays. It should be a platform: a depletion framework where the underlying molecular biology and computational design process stay fixed, and only the target definition changes. Practically, that means: (1) characterize, for a given application, what fraction of sequencing output a defined set of molecules is consuming and confirm that removing them doesn't touch the signal of interest; (2) design CRISPR-gRNAs against that defined set with the same specificity-scoring rigor regardless of whether the "unwanted majority" is human ribosomal RNA, host genomic DNA in a metagenomic sample, or non-functional repetitive elements in a plant genome; and (3) validate with the analysis pipeline the end user will actually run, not a generic proxy metric.</p>
+
+          <p>What makes this a platform decision rather than a research curiosity is that step (2) &mdash; guide design and specificity validation &mdash; is largely application-agnostic. The computational infrastructure for scoring on-target efficiency and off-target risk, filtering candidate guides, and simulating expected depletion yield doesn't fundamentally change between "deplete ribosomal RNA from a nasal swab" and "deplete repetitive elements from a sorghum genome." What changes is the target list you feed it and the downstream pipeline you validate against.</p>
+
+          <h2 id="pipeline">Building a Platform, Not a One-Off Assay</h2>
+          <p>Treating this as shared infrastructure rather than bespoke chemistry changes how you build it:</p>
+
+          <ul>
+            <li><strong>A reusable target-definition step.</strong> For each new application, the first deliverable isn't a guide RNA &mdash; it's a defensible, data-driven definition of exactly what should be depleted (which host sequences, which repeat classes, which regulatory-irrelevant regions) and a quantified estimate of how much sequencing capacity depleting it would free up. That estimate is what turns a scientific idea into something worth building a product around.</li>
+            <li><strong>A shared specificity-validation harness.</strong> Rather than re-deriving off-target scoring logic for every new application, the goal was a consistent computational process for confirming a candidate guide panel wouldn't collaterally deplete the signal of interest &mdash; whether "signal of interest" meant a microbial genome, a functional plant gene, or an active regulatory element.</li>
+            <li><strong>Application-specific downstream validation, every time.</strong> The one step that can't be generalized away is proving the depletion actually improves the thing a researcher in that specific field cares about &mdash; assembly quality for a novel pathogen, variant-calling accuracy for a breeding program, peak-calling sensitivity for a regulatory-element study. A platform gives you a faster path to that validation step; it doesn't substitute for doing it.</li>
+          </ul>
+
+          <h2 id="applications">Three Applications, One Design Loop</h2>
+          <p>In metagenomics, the depletion target is host-derived DNA &mdash; removing it raises the effective sequencing depth available for microbial content, which directly improves both the sensitivity of detecting low-abundance organisms and the assembly quality achievable for genomes that would otherwise be reconstructed from a thin trickle of reads. In agricultural genomics, the depletion target is the non-functional, repetitive majority of a polyploid plant genome &mdash; removing it lets a low-pass WGS or GBS study concentrate its already-limited coverage on the functional fraction of the genome where breeding-relevant variants actually live, without the cost and lead time of a custom capture panel. In gene-regulation research, the target is, by design, whatever isn't the regulatory element under study in that particular experiment &mdash; a harder, more context-dependent target definition, and consequently the application where the "define what to deplete" step of the framework carries the most weight.</p>
+
+          <h2 id="impact">Why This Matters as a Platform Decision</h2>
+          <p>None of these three applications individually justifies building a general platform &mdash; each one, on its own, could be solved with a bespoke assay and never look back. The case for building shared infrastructure instead is that the same underlying insight (know precisely what you don't need, and remove it before you pay to sequence it) keeps reappearing across fields that don't otherwise talk to each other. Building the specificity-validation and guide-design machinery once, well, and generically is what let a team that started by cleaning up basic RNA-seq libraries end up plausibly relevant to metagenomic pathogen surveillance, plant breeding programs, and epigenomics &mdash; without reinventing the computational core each time.</p>
+
+          <p>There's a real risk in platform thinking that's worth naming honestly: the temptation to force every new application through the existing framework even when it's a poor fit, because the infrastructure already exists and reuse feels efficient. Gene-regulation depletion is the case in this set that pushes hardest against that temptation, precisely because "what to deplete" isn't a fixed target the way ribosomal RNA or a specific pseudogene is &mdash; it shifts with cell type and experimental condition, which means the target-definition step can't be shortcut just because the design and validation machinery downstream of it is already built. Treating that step as a one-time solved problem, rather than a genuinely new scientific question each time, is exactly how a platform quietly stops fitting the problem it's being asked to solve. The discipline that keeps a shared framework honest is insisting that step (1) &mdash; defining the target, with real data, for this specific application &mdash; gets done from scratch every time, even when steps (2) and (3) don't.</p>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══════════════════════ MORE CASE STUDIES ═══════════════════════ -->
+  <section class="article__more">
+    <div class="container">
+      <div class="section__header reveal">
+        <div class="section__label">Keep Reading</div>
+        <h2 class="section__title">More Case Studies</h2>
+      </div>
+      <div class="more-case__grid" id="moreCaseStudies" data-current-slug="crispr-depletion-platform"></div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════ FOOTER ═══════════════════════ -->
+  <footer class="footer">
+    <div class="container footer__inner">
+      <div class="footer__left">
+        <span class="footer__name">Sridhar Ranganathan, Ph.D.</span>
+        <span class="footer__tagline">Bioinformatics &middot; Genomics &middot; AI/ML</span>
+      </div>
+      <div class="footer__links">
+        <a href="../index.html#about">About</a>
+        <a href="../index.html#experience">Experience</a>
+        <a href="index.html">Case Studies</a>
+        <a href="../index.html#contact">Contact</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="../case-studies-data.js"></script>
+  <script src="../main.js"></script>
+</body>
+</html>

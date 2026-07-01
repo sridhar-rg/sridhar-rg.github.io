@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="How CRISPR-based depletion of uninformative transcripts became a companion product for 10x Genomics and Pacific Biosciences single-cell and long-read workflows." />
+  <title>CRISPRclean for Single-Cell &amp; Long-Read Genomics | Sridhar Ranganathan</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+
+  <!-- ═══════════════════════ NAVIGATION ═══════════════════════ -->
+  <nav class="nav" id="nav">
+    <div class="nav__inner">
+      <a class="nav__logo" href="../index.html">SR</a>
+      <ul class="nav__links" id="navLinks">
+        <li><a href="../index.html#about">About</a></li>
+        <li><a href="../index.html#highlights">Highlights</a></li>
+        <li><a href="../index.html#experience">Experience</a></li>
+        <li><a href="index.html" class="active">Featured Work</a></li>
+        <li><a href="../index.html#skills">Skills</a></li>
+        <li><a href="../publications/index.html">Publications</a></li>
+        <li><a href="../index.html#blog">Blog</a></li>
+        <li><a href="../index.html#contact">Contact</a></li>
+      </ul>
+      <button class="nav__toggle" id="navToggle" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ═══════════════════════ ARTICLE HEADER ═══════════════════════ -->
+  <header class="article__header">
+    <div class="container">
+      <a href="index.html" class="article__back reveal">&larr; Back to Case Studies</a>
+      <div class="reveal">
+        <div class="article__meta">
+          <span class="tag tag--accent">Jumpcode Genomics</span>
+          <span class="article__date">10x Genomics &middot; Pacific Biosciences</span>
+          <span class="article__read-time">7 min read</span>
+        </div>
+        <h1 class="article__title">CRISPRclean for Single-Cell &amp; Long-Read Genomics</h1>
+        <p class="article__subtitle">Most of a single-cell sequencing run is spent re-confirming that ribosomes exist. Removing that signal before sequencing turned into a companion product for two of the field's biggest sequencing platforms.</p>
+        <div class="article__stats">
+          <span class="project-card__stat">10x Genomics companion product</span>
+          <span class="project-card__stat">PacBio companion product</span>
+          <span class="project-card__stat">Highest-revenue Jumpcode product line</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="article__body">
+    <div class="container">
+
+      <figure class="article__hero-image reveal">
+        <img class="article__hero-img" src="../assets/images/scrna-seq-1.png" alt="Diagram of single-cell RNA sequencing depletion workflow" />
+      </figure>
+
+      <div class="article__layout">
+        <aside class="article__toc reveal">
+          <div class="article__toc-label">On This Page</div>
+          <ol>
+            <li><a href="#waste">Why Single-Cell Sequencing Wastes Most of Its Own Data</a></li>
+            <li><a href="#approach">The Scientific Approach</a></li>
+            <li><a href="#pipeline">Building the Computational Pipeline</a></li>
+            <li><a href="#partnerships">Two Platform Partnerships, One Underlying Idea</a></li>
+            <li><a href="#impact">Impact</a></li>
+          </ol>
+        </aside>
+
+        <div class="article__content reveal">
+
+          <h2 id="waste">Why Single-Cell Sequencing Wastes Most of Its Own Data</h2>
+          <p>Single-cell RNA sequencing (scRNA-seq) has become the workhorse technology for immunology and cancer research, largely because it can assign a transcriptomic fingerprint to thousands of individual cells and use that fingerprint to identify cell type, state, and lineage. Doing that well requires real sequencing depth &mdash; production scRNA-seq experiments routinely target upward of 100 million reads. Here's the uncomfortable part: the software that actually does the cell-type classification &mdash; Seurat, Cell Ranger, and their peers &mdash; draws its signal from a comparatively small number of genes. The overwhelming majority of reads in a typical scRNA-seq library map to ribosomal RNA and a modest set of housekeeping genes that are highly expressed in essentially every cell type and therefore useless for telling cell types apart. Those reads aren't wrong, exactly. They're just not doing any of the work the experiment is paying for.</p>
+
+          <p>That's a familiar shape of problem to anyone who's read the pandemic-preparedness or newborn-screening work on this site: an assay drowning a small informative signal in a large, predictable, biologically uninteresting one. The fix, unsurprisingly, followed the same logic &mdash; if the noise is a known, enumerable set of molecules, deplete it before sequencing rather than filtering it out of the data afterward. What made this project distinct was the discovery work required to know, with confidence, exactly which genes were safe to remove without quietly degrading the biology every researcher actually cares about.</p>
+
+          <h2 id="approach">The Scientific Approach: Subtracting the Predictable, Not the Unknown</h2>
+          <p>Unlike targeting a single well-characterized pseudogene, "figure out what's safe to remove from a single-cell library" is an empirical question that has to be answered tissue by tissue. A gene that's transcriptionally silent and irrelevant in blood might be a meaningful marker in liver or brain. So the first phase of this project was less CRISPR design and more data science: we assembled publicly available scRNA-seq datasets from SRA and other archives across a range of tissue types &mdash; blood, PBMCs, liver, brain, and others &mdash; and systematically characterized, for each tissue type, which genes the standard classification tools (Seurat, Cell Ranger) simply don't use when assigning cell identity.</p>
+
+          <p>For each of those uninformative-but-abundant genes, we estimated what fraction of a typical library's reads they consume. That number is what turns "this gene doesn't help classification" into a business case for depleting it &mdash; a gene that's unused but only 0.1% of reads isn't worth the assay complexity; a handful of genes eating double-digit percentages of sequencing output, across many tissue types, absolutely are. That tissue-by-tissue empirical screen, done before any guide RNA was designed, is what let the eventual CRISPR panel target the genes that actually mattered for yield without gambling on genes that might matter for some cell type nobody had tested yet.</p>
+
+          <h2 id="pipeline">Building the Computational Pipeline</h2>
+          <p>With target genes identified, the engineering work had its own platform-specific wrinkles that don't show up in a simpler single-target depletion assay:</p>
+
+          <ul>
+            <li><strong>Designing guides that leave the informative transcriptome untouched.</strong> The CRISPR-gRNA panel had to selectively deplete the identified high-abundance, low-information transcripts while leaving every other gene's representation in the library statistically undisturbed &mdash; verified by comparing per-gene read proportions before and after depletion across the full panel of test tissues, not just the targeted genes.</li>
+            <li><strong>Respecting library-prep geometry.</strong> Different single-cell and long-read platforms capture different parts of a transcript, and a depletion guide has to be positioned where the library actually has sequence to cut. 10x Genomics' Chromium instrument captures predominantly the 3&prime;-end of transcripts via its droplet-based microfluidics and bead chemistry, while other platforms capture the 5&prime;-end or the whole transcript. A guide RNA panel designed against one capture geometry can simply miss its target on a platform with a different one, so the design process had to explicitly account for where, along each transcript, the library molecule would actually still contain the target sequence.</li>
+            <li><strong>Validating against real single-cell outputs, not just bulk proxies.</strong> The metric that mattered wasn't "did depletion work in a bulk RNA-seq library" &mdash; it was whether downstream single-cell analysis (clustering, cell-type annotation, marker-gene detection) looked the same or better after depletion, at a fraction of the sequencing depth. That required running full single-cell analysis pipelines on paired depleted/non-depleted datasets and comparing the biology that came out the other end, not just read-count statistics.</li>
+          </ul>
+
+          <p>The resulting product, DepleteX Single Cell RNA Boost, let researchers either recover more usable reads at the same sequencing depth or cut sequencing depth roughly in half while preserving dataset quality &mdash; a direct cost lever for labs running single-cell experiments at scale.</p>
+
+          <h2 id="partnerships">Two Platform Partnerships, One Underlying Idea</h2>
+          <p>The same core idea &mdash; remove the predictable, abundant, uninformative molecules before sequencing &mdash; turned out to generalize cleanly to a very different platform: Pacific Biosciences' long-read MAS-Seq and MAS-Iso-Seq workflows, which concatenate long transcriptomic fragments to enable more accurate full-length isoform discovery and quantification. I incorporated PacBio's own bioinformatics pipelines to functionally evaluate whether CRISPR-based depletion of nucleic acids improved SMRT-seq library prep the same way it improved short-read scRNA-seq, and worked jointly with PacBio's technical teams to support customers using both companies' products together.</p>
+
+          <p>Both 10x Genomics and Pacific Biosciences ultimately recognized CRISPRclean-based products as companion technologies for their platforms &mdash; a meaningful validation, since companion-product status generally requires a technical partner to independently confirm that a third-party product measurably improves outcomes on their instrument, not just that it's compatible with it.</p>
+
+          <h2 id="impact">Impact</h2>
+          <p>The same underlying depletion chemistry, tuned for the simpler problem of bulk ribosomal RNA removal, also powers a family of ribodepletion products compatible with library-prep workflows from Revvity, NEBNext, Illumina, Takara, Watchmaker, and Qiagen. That product line &mdash; the least glamorous-sounding of everything described here, and the most commercially important &mdash; has been Jumpcode's highest revenue generator to date. It's a useful data point on its own: the flashiest application of a platform technology (agnostic pathogen detection, single-cell optimization) is often not where the majority of its commercial value ends up. Sometimes it's the boring, universal version of the same idea, sold into every lab already running the most common assay in the field.</p>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══════════════════════ MORE CASE STUDIES ═══════════════════════ -->
+  <section class="article__more">
+    <div class="container">
+      <div class="section__header reveal">
+        <div class="section__label">Keep Reading</div>
+        <h2 class="section__title">More Case Studies</h2>
+      </div>
+      <div class="more-case__grid" id="moreCaseStudies" data-current-slug="crisprclean-single-cell-genomics"></div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════ FOOTER ═══════════════════════ -->
+  <footer class="footer">
+    <div class="container footer__inner">
+      <div class="footer__left">
+        <span class="footer__name">Sridhar Ranganathan, Ph.D.</span>
+        <span class="footer__tagline">Bioinformatics &middot; Genomics &middot; AI/ML</span>
+      </div>
+      <div class="footer__links">
+        <a href="../index.html#about">About</a>
+        <a href="../index.html#experience">Experience</a>
+        <a href="index.html">Case Studies</a>
+        <a href="../index.html#contact">Contact</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="../case-studies-data.js"></script>
+  <script src="../main.js"></script>
+</body>
+</html>

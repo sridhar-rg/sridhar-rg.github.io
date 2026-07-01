@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Case studies — Sridhar Ranganathan. Six flagship projects spanning CRISPR diagnostics, clinical genomics, and metabolic engineering." />
+  <title>Case Studies | Sridhar Ranganathan</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+
+  <!-- ═══════════════════════ NAVIGATION ═══════════════════════ -->
+  <nav class="nav" id="nav">
+    <div class="nav__inner">
+      <a class="nav__logo" href="../index.html">SR</a>
+      <ul class="nav__links" id="navLinks">
+        <li><a href="../index.html#about">About</a></li>
+        <li><a href="../index.html#highlights">Highlights</a></li>
+        <li><a href="../index.html#experience">Experience</a></li>
+        <li><a href="index.html" class="active">Featured Work</a></li>
+        <li><a href="../index.html#skills">Skills</a></li>
+        <li><a href="../publications/index.html">Publications</a></li>
+        <li><a href="../index.html#blog">Blog</a></li>
+        <li><a href="../index.html#contact">Contact</a></li>
+      </ul>
+      <button class="nav__toggle" id="navToggle" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ═══════════════════════ HERO ═══════════════════════ -->
+  <section class="listing-hero">
+    <div class="container">
+      <a href="../index.html" class="article__back reveal">&larr; Back to Portfolio</a>
+      <div class="reveal">
+        <div class="section__label">Featured Work</div>
+        <h1 class="listing-hero__title">Case Studies</h1>
+        <p class="listing-hero__subtitle">Six flagship projects spanning infectious-disease diagnostics, clinical genomics, single-cell sequencing, and metabolic engineering &mdash; each with the full scientific and computational story.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════ GRID ═══════════════════════ -->
+  <section class="section">
+    <div class="container">
+      <div class="work__grid">
+
+        <div class="project-card reveal">
+          <div class="project-card__img-wrap">
+            <img src="../assets/images/sars-cov-2-illustration.jpg" alt="Molecular illustration of the SARS-CoV-2 coronavirus" />
+          </div>
+          <div class="project-card__body">
+            <div class="project-card__tag">Jumpcode Genomics</div>
+            <h3 class="project-card__title">Zero-Day Pandemic Preparedness</h3>
+            <p class="project-card__hook">CRISPR-enhanced metatranscriptomics for agnostic pathogen detection &mdash; from a $750K BARDA contract to a ~$24M EU consortium award.</p>
+            <div class="project-card__stats">
+              <span class="project-card__stat">$750K BARDA</span>
+              <span class="project-card__stat">~$24M HaDEA</span>
+            </div>
+            <a class="project-card__cta" href="zero-day-pandemic-preparedness.html">Read Full Case Study <span>&rarr;</span></a>
+          </div>
+        </div>
+
+        <div class="project-card reveal">
+          <div class="project-card__img-wrap">
+            <img src="../assets/images/pseudogene.png" alt="Pseudogene contamination diagram" />
+          </div>
+          <div class="project-card__body">
+            <div class="project-card__tag">Jumpcode Genomics</div>
+            <h3 class="project-card__title">New-Born Screening: Pseudogene Depletion</h3>
+            <p class="project-card__hook">Removing pseudogene contamination (PMS2CL and others) from WGS variant calls in newborn genetic-disease screening panels.</p>
+            <div class="project-card__stats">
+              <span class="project-card__stat">~95% FP reduction</span>
+              <span class="project-card__stat">~$450K NHGRI SBIR</span>
+            </div>
+            <a class="project-card__cta" href="newborn-screening-pseudogene-depletion.html">Read Full Case Study <span>&rarr;</span></a>
+          </div>
+        </div>
+
+        <div class="project-card reveal">
+          <div class="project-card__img-wrap">
+            <img src="../assets/images/scrna-seq-1.png" alt="Single-cell RNA sequencing depletion diagram" />
+          </div>
+          <div class="project-card__body">
+            <div class="project-card__tag">Jumpcode Genomics</div>
+            <h3 class="project-card__title">CRISPRclean for Single-Cell &amp; Long-Read Genomics</h3>
+            <p class="project-card__hook">Depleting non-informative transcripts from scRNA-seq and long-read libraries &mdash; now a companion product for 10x Genomics and Pacific Biosciences.</p>
+            <div class="project-card__stats">
+              <span class="project-card__stat">10x Genomics partner</span>
+              <span class="project-card__stat">PacBio partner</span>
+            </div>
+            <a class="project-card__cta" href="crisprclean-single-cell-genomics.html">Read Full Case Study <span>&rarr;</span></a>
+          </div>
+        </div>
+
+        <div class="project-card reveal">
+          <div class="project-card__img-wrap">
+            <img src="../assets/images/crispr-depletion.png" alt="CRISPR depletion platform diagram" />
+          </div>
+          <div class="project-card__body">
+            <div class="project-card__tag">Jumpcode Genomics</div>
+            <h3 class="project-card__title">CRISPR-Based Depletion Platform</h3>
+            <p class="project-card__hook">A general-purpose CRISPR depletion platform solving whole-genome sequencing's "wasted coverage" problem across metagenomics, agri-genomics, and gene regulation.</p>
+            <div class="project-card__stats">
+              <span class="project-card__stat">Metagenomics</span>
+              <span class="project-card__stat">Agri-genomics</span>
+            </div>
+            <a class="project-card__cta" href="crispr-depletion-platform.html">Read Full Case Study <span>&rarr;</span></a>
+          </div>
+        </div>
+
+        <div class="project-card reveal">
+          <div class="project-card__img-wrap">
+            <img src="../assets/logos/thermofisher.png" alt="Thermo Fisher Scientific logo" style="height:190px; object-fit:contain; padding: 2rem;" />
+          </div>
+          <div class="project-card__body">
+            <div class="project-card__tag">Thermo Fisher Scientific</div>
+            <h3 class="project-card__title">TrueDesign&reg; &amp; SeqScreener&trade;</h3>
+            <p class="project-card__hook">Cloud-based CRISPR design and edit-confirmation tools that became the customer-facing front door to Thermo Fisher's gene-editing product line.</p>
+            <div class="project-card__stats">
+              <span class="project-card__stat">Top 10 Innovation 2016</span>
+            </div>
+            <a class="project-card__cta" href="truedesign-genome-editing-portal.html">Read Full Case Study <span>&rarr;</span></a>
+          </div>
+        </div>
+
+        <div class="project-card reveal">
+          <div class="project-card__img-wrap">
+            <img src="../assets/images/optforce-1.png" alt="OptForce metabolic engineering framework diagram" />
+          </div>
+          <div class="project-card__body">
+            <div class="project-card__tag">Penn State &middot; Maranas Lab</div>
+            <h3 class="project-card__title">OptForce: Computational Strain Design</h3>
+            <p class="project-card__hook">An optimization framework identifying the minimal genetic interventions needed to overproduce target biochemicals in engineered microbes.</p>
+            <div class="project-card__stats">
+              <span class="project-card__stat">PLoS Comp Bio, 2010</span>
+            </div>
+            <a class="project-card__cta" href="optforce-metabolic-engineering.html">Read Full Case Study <span>&rarr;</span></a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════ FOOTER ═══════════════════════ -->
+  <footer class="footer">
+    <div class="container footer__inner">
+      <div class="footer__left">
+        <span class="footer__name">Sridhar Ranganathan, Ph.D.</span>
+        <span class="footer__tagline">Bioinformatics &middot; Genomics &middot; AI/ML</span>
+      </div>
+      <div class="footer__links">
+        <a href="../index.html#about">About</a>
+        <a href="../index.html#experience">Experience</a>
+        <a href="../publications/index.html">Publications</a>
+        <a href="../index.html#contact">Contact</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="../main.js"></script>
+</body>
+</html>

@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="How CRISPR-based depletion of pseudogene-derived molecules eliminated ~95% of false-positive variant calls in newborn genetic-disease screening panels." />
+  <title>New-Born Screening: Pseudogene Depletion | Sridhar Ranganathan</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+
+  <!-- ═══════════════════════ NAVIGATION ═══════════════════════ -->
+  <nav class="nav" id="nav">
+    <div class="nav__inner">
+      <a class="nav__logo" href="../index.html">SR</a>
+      <ul class="nav__links" id="navLinks">
+        <li><a href="../index.html#about">About</a></li>
+        <li><a href="../index.html#highlights">Highlights</a></li>
+        <li><a href="../index.html#experience">Experience</a></li>
+        <li><a href="index.html" class="active">Featured Work</a></li>
+        <li><a href="../index.html#skills">Skills</a></li>
+        <li><a href="../publications/index.html">Publications</a></li>
+        <li><a href="../index.html#blog">Blog</a></li>
+        <li><a href="../index.html#contact">Contact</a></li>
+      </ul>
+      <button class="nav__toggle" id="navToggle" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ═══════════════════════ ARTICLE HEADER ═══════════════════════ -->
+  <header class="article__header">
+    <div class="container">
+      <a href="index.html" class="article__back reveal">&larr; Back to Case Studies</a>
+      <div class="reveal">
+        <div class="article__meta">
+          <span class="tag tag--accent">Jumpcode Genomics</span>
+          <span class="article__date">with Revvity Omics</span>
+          <span class="article__read-time">8 min read</span>
+        </div>
+        <h1 class="article__title">New-Born Screening: Pseudogene Depletion</h1>
+        <p class="article__subtitle">Every genome carries decoys of its own genes. For a handful of the genes newborn screening panels care about most, those decoys are good enough to fool a variant caller &mdash; and precise enough to require a CRISPR to remove.</p>
+        <div class="article__stats">
+          <span class="project-card__stat">~95% FP reduction</span>
+          <span class="project-card__stat">~$450K NHGRI SBIR</span>
+          <span class="project-card__stat">ABCD1 &middot; GBA1 &middot; CYP21A2</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="article__body">
+    <div class="container">
+
+      <figure class="article__hero-image reveal">
+        <img class="article__hero-img" src="../assets/images/pseudogene.png" alt="Diagram showing a pseudogene and its highly similar parental gene" />
+      </figure>
+
+      <div class="article__layout">
+        <aside class="article__toc reveal">
+          <div class="article__toc-label">On This Page</div>
+          <ol>
+            <li><a href="#problem">The Diagnostic Blind Spot</a></li>
+            <li><a href="#approach">The Scientific Approach</a></li>
+            <li><a href="#pipeline">Building the Computational Pipeline</a></li>
+            <li><a href="#results">Proof, Partnership, and a Federal Award</a></li>
+            <li><a href="#next">Where This Goes Next</a></li>
+          </ol>
+        </aside>
+
+        <div class="article__content reveal">
+
+          <h2 id="problem">The Diagnostic Blind Spot Hiding in Plain Sight</h2>
+          <p>Pseudogenes are one of the genome's stranger inheritances. They're the remnants of an evolutionary copy-paste error &mdash; duplicated stretches of DNA that once resembled a functional gene closely enough to be mistaken for one, before mutation or disuse left them silent. Most of the time they're evolutionary trivia: dead weight the genome carries around, transcriptionally inert, biologically irrelevant. But sequence similarity doesn't care whether a piece of DNA is "real." If a pseudogene is similar enough to its parent gene, a short-read aligner can't reliably tell which one a given read came from &mdash; and that ambiguity becomes a diagnostic problem the moment the parent gene is one you're screening newborns for.</p>
+
+          <p>The textbook example is Lynch syndrome and the gene <em>PMS2</em>. A region spanning <em>PMS2</em> exons 12&ndash;15 is nearly identical to a pseudogene called <em>PMS2CL</em>. Reads originating from the pseudogene routinely misalign onto the real gene, and vice versa, which means a clinical variant-calling pipeline can either miss a genuine pathogenic variant (buried under pseudogene noise that looks like a disagreeing read) or call a false positive (a pseudogene-derived read masquerading as a variant in the functional gene). Neither failure mode is acceptable in a newborn screening context, where a false positive triggers unnecessary and stressful follow-up testing for a family, and a false negative means a treatable condition goes undetected. Three genes central to newborn screening panels &mdash; <em>ABCD1</em> (adrenoleukodystrophy), <em>GBA1</em> (Gaucher disease), and <em>CYP21A2</em> (congenital adrenal hyperplasia) &mdash; all have this exact problem: real disease-relevant genes shadowed by pseudogene doppelg&auml;ngers homologous enough to compromise standard short-read variant calling.</p>
+
+          <h2 id="approach">The Scientific Approach: Depleting the Doppelg&auml;nger</h2>
+          <p>The instinct of most bioinformatics teams facing a misalignment problem is to fix it downstream &mdash; better aligners, better variant callers, statistical models that try to disentangle which reads "really" belong to the gene of interest. We took the opposite approach, for the same underlying reason that shaped the pandemic-preparedness work: if you can physically remove the confounding molecule before sequencing, you don't need a downstream algorithm to guess correctly every time. Partnering with Revvity Omics (formerly PerkinElmer), we set out to build a CRISPR-based depletion assay that selectively removes pseudogene-derived DNA fragments during whole-genome library preparation, before the sample ever reaches the sequencer.</p>
+
+          <p>Saying that sentence is easy. Doing it is a genuinely hard molecular design problem, for the same reason the misalignment happens in the first place: the pseudogene and its parent gene are, by definition, extremely similar sequences. A guide RNA that's only "pretty specific" for the pseudogene will inevitably nick the real gene some fraction of the time &mdash; which would mean depleting the very signal the assay is supposed to protect. We needed specificity fine enough to resolve differences of a handful of bases between two sequences that are otherwise near-identical across a multi-kilobase region, and we needed it validated computationally before it ever touched a patient sample.</p>
+
+          <figure class="article__figure reveal">
+            <img src="../assets/images/Untitled.png" alt="Comparison of standard whole-genome sequencing versus CRISPR-depletion-enhanced sequencing for pseudogene-confounded variant calling" />
+            <figcaption>Standard WGS lets pseudogene-derived reads contaminate variant calls at the parental gene; CRISPR depletion removes those reads before sequencing, restoring accuracy at the cost of upfront assay complexity.</figcaption>
+          </figure>
+
+          <h2 id="pipeline">Building the Computational Pipeline</h2>
+          <p>The technical work split cleanly into two problems &mdash; designing molecules precise enough to trust, and then proving, computationally, that the trust was earned.</p>
+
+          <ul>
+            <li><strong>gRNA design against a moving target.</strong> We used CRISflash to identify, filter, and select candidate guide RNA target sites in the regions where pseudogene and parent-gene sequence diverge, scoring each candidate for on-target efficiency and, more importantly, for predicted off-target activity against the parent gene itself. Because a single Cas enzyme's PAM-site requirements and cutting characteristics don't always line up with where the sequence actually diverges, we worked across multiple Cas flavors &mdash; Cpf1, Cas12a, Cas13, and SpCas9 &mdash; and combined them within a single whole-genome assay, picking whichever enzyme gave the cleanest discriminating cut at each specific locus rather than forcing one enzyme to do a job it wasn't well-suited for.</li>
+            <li><strong>Validating specificity before touching a sample.</strong> Every candidate guide had to be checked in silico against the reference sequence of both the pseudogene and the parent gene, gene by gene, to confirm the predicted cut sites would enrich for depletion of the decoy without measurably reducing coverage at the functional locus. This is the step that turns "we think this works" into something a clinical lab can stand behind.</li>
+            <li><strong>Closing the loop with real variant-calling pipelines.</strong> A depletion assay is only useful if it demonstrably improves what a clinical lab's existing GATK-based (or equivalent) variant-calling pipeline actually reports. So the validation wasn't "did we see a peak where we expected" on a coverage plot &mdash; it was running full samples through the same variant-calling pipelines used clinically, with and without depletion, and directly comparing the false-positive call rate at each target gene. That paired, before/after design is what makes the ~95% figure credible rather than a back-of-envelope estimate.</li>
+            <li><strong>Building for combinatorial complexity.</strong> Because different genes needed different Cas enzymes and different guide sets, the assay had to run several distinct CRISPR-RNP chemistries within a single WGS library-prep workflow without them interfering with one another &mdash; a combinatorial design constraint that doesn't show up when you're depleting a single, simple target, but becomes the central engineering problem once you're covering three genes with three different escape-artist pseudogenes.</li>
+          </ul>
+
+          <h2 id="results">Proof, Partnership, and a Federal Award</h2>
+          <p>Targeting the pseudogenes shadowing <em>ABCD1</em>, <em>GBA1</em>, and <em>CYP21A2</em>, the depletion approach eliminated roughly 95% of the false-positive variant calls that standard WGS produced at those loci. That's not a marginal improvement to an already-working assay &mdash; it's the difference between a newborn screening result a clinician can trust at face value and one that requires manual review or orthogonal confirmation before anyone can act on it.</p>
+
+          <p>That proof-of-concept data, generated in partnership with Revvity Omics, was the evidence base behind a successful NHGRI SBIR Phase I award (~$450K) to further develop the technology &mdash; a useful reminder that in translational genomics, a rigorous before/after comparison on real clinical variant-calling pipelines is often worth more, to a funding reviewer, than an elegant molecular trick with no downstream validation attached.</p>
+
+          <h2 id="next">Where This Goes Next</h2>
+          <p>Three genes is a start, not an endpoint. Pseudogene contamination isn't unique to <em>ABCD1</em>, <em>GBA1</em>, and <em>CYP21A2</em> &mdash; it's a structural feature of the human genome, and current estimates put the number of pseudogene-parent pairs with clinically relevant homology well into the thousands. We're extending this approach toward breast- and colon-cancer screening panels, where a similar class of problem &mdash; genes shadowed by highly similar decoys &mdash; potentially affects more than 4,000 pseudogene pairs. The molecular design principle stays the same each time: find where the decoy and the real gene actually differ, cut there with the enzyme best suited to that specific difference, and prove it with the same variant-calling pipeline a clinical lab will actually use. What scales is the design process, not any single guide RNA.</p>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══════════════════════ MORE CASE STUDIES ═══════════════════════ -->
+  <section class="article__more">
+    <div class="container">
+      <div class="section__header reveal">
+        <div class="section__label">Keep Reading</div>
+        <h2 class="section__title">More Case Studies</h2>
+      </div>
+      <div class="more-case__grid" id="moreCaseStudies" data-current-slug="newborn-screening-pseudogene-depletion"></div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════ FOOTER ═══════════════════════ -->
+  <footer class="footer">
+    <div class="container footer__inner">
+      <div class="footer__left">
+        <span class="footer__name">Sridhar Ranganathan, Ph.D.</span>
+        <span class="footer__tagline">Bioinformatics &middot; Genomics &middot; AI/ML</span>
+      </div>
+      <div class="footer__links">
+        <a href="../index.html#about">About</a>
+        <a href="../index.html#experience">Experience</a>
+        <a href="index.html">Case Studies</a>
+        <a href="../index.html#contact">Contact</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="../case-studies-data.js"></script>
+  <script src="../main.js"></script>
+</body>
+</html>

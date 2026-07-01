@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="OptForce: a computational optimization framework for identifying the minimal genetic interventions needed to overproduce target biochemicals in engineered microbes." />
+  <title>OptForce: Computational Strain Design | Sridhar Ranganathan</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+
+  <!-- ═══════════════════════ NAVIGATION ═══════════════════════ -->
+  <nav class="nav" id="nav">
+    <div class="nav__inner">
+      <a class="nav__logo" href="../index.html">SR</a>
+      <ul class="nav__links" id="navLinks">
+        <li><a href="../index.html#about">About</a></li>
+        <li><a href="../index.html#highlights">Highlights</a></li>
+        <li><a href="../index.html#experience">Experience</a></li>
+        <li><a href="index.html" class="active">Featured Work</a></li>
+        <li><a href="../index.html#skills">Skills</a></li>
+        <li><a href="../publications/index.html">Publications</a></li>
+        <li><a href="../index.html#blog">Blog</a></li>
+        <li><a href="../index.html#contact">Contact</a></li>
+      </ul>
+      <button class="nav__toggle" id="navToggle" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ═══════════════════════ ARTICLE HEADER ═══════════════════════ -->
+  <header class="article__header">
+    <div class="container">
+      <a href="index.html" class="article__back reveal">&larr; Back to Case Studies</a>
+      <div class="reveal">
+        <div class="article__meta">
+          <span class="tag tag--accent">Penn State &middot; Maranas Lab</span>
+          <span class="article__date">2006 &ndash; 2011</span>
+          <span class="article__read-time">7 min read</span>
+        </div>
+        <h1 class="article__title">OptForce: Computational Strain Design</h1>
+        <p class="article__subtitle">Before CRISPR, before genomics diagnostics, my first computational biology problem was a graph and an optimization solver: which genes, exactly, does a microbe need changed to make more of the molecule you want?</p>
+        <div class="article__stats">
+          <span class="project-card__stat">PLoS Comp Bio, 2010</span>
+          <span class="project-card__stat">Industrially adopted (Genomatica)</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="article__body">
+    <div class="container">
+
+      <figure class="article__hero-image reveal">
+        <img class="article__hero-img" src="../assets/images/optforce-1.png" alt="OptForce metabolic engineering optimization framework diagram" />
+      </figure>
+
+      <div class="article__layout">
+        <aside class="article__toc reveal">
+          <div class="article__toc-label">On This Page</div>
+          <ol>
+            <li><a href="#origin">An Engineering Approach to a Biology Problem</a></li>
+            <li><a href="#approach">The Scientific Approach: What Should Change, and What Shouldn't</a></li>
+            <li><a href="#pipeline">Building the Computational Framework</a></li>
+            <li><a href="#applications">From Succinate to Butanol to Fragrance Chemicals</a></li>
+            <li><a href="#legacy">A Framework That Outlived the Thesis</a></li>
+          </ol>
+        </aside>
+
+        <div class="article__content reveal">
+
+          <h2 id="origin">An Engineering Approach to a Biology Problem</h2>
+          <p>My path into computational biology didn't start in a biology department. I came to Prof. Costas D. Maranas's lab at Penn State by way of an M.S. in Industrial Engineering and Operations Research, which turned out to be exactly the right background for the question the lab cared about: metabolism is, among other things, a giant constrained optimization problem, and a graduate student who thinks in flux balances and linear programs can contribute to it without ever having run a Western blot. The Maranas group builds computational frameworks &mdash; grounded in systems engineering and mathematical optimization &mdash; to understand, analyze, and redesign metabolism and proteins: metabolic network reconstruction, computational strain design, synthetic biology, and enzyme and protein engineering, among other threads. My corner of that agenda was strain design: given a microbe and a biochemical you'd like it to produce in commercially useful quantities, which genes do you actually need to change?</p>
+
+          <p>That question matters more than it might sound. Metabolic engineering before computational strain-design tools tended to proceed by informed intuition &mdash; a researcher's mental model of a pathway, followed by trial-and-error genetic modifications. That works, slowly, for well-studied pathways. It works much less well when the profitable intervention is a gene several reactions away from the pathway you're staring at, with no obvious biochemical reason to suspect it &mdash; exactly the kind of non-obvious, systems-level effect that a hand-drawn pathway diagram will never surface, but that a genome-scale computational model can.</p>
+
+          <h2 id="approach">The Scientific Approach: What Should Change, and What Shouldn't</h2>
+          <p>OptForce, the framework I developed with my advisor Costas Maranas and labmate Patrick Suthers and published in <em>PLoS Computational Biology</em> in 2010, starts from a deceptively simple observation: if you have flux measurements from both a wild-type strain and a strain that's already known to overproduce your target biochemical (even a poorly-optimized one), the difference between those two flux distributions contains information about which reactions matter. Rather than trying to redesign metabolism from first principles, OptForce mathematically contrasts the two flux states across a genome-scale metabolic network model and identifies which reaction fluxes are structurally required to increase, which must decrease or be eliminated, and which can be left alone entirely.</p>
+
+          <p>The output isn't a single answer &mdash; metabolic networks are redundant enough that multiple intervention sets can achieve a similar production outcome. So the method groups the required flux changes hierarchically and extracts a minimal, actionable set of genetic modifications: the smallest, most defensible list of interventions that a strain engineer could actually go implement, rather than an exhaustive and overwhelming catalogue of every reaction that flux analysis says is "involved."</p>
+
+          <blockquote class="article__pullquote">"The goal was never to tell an engineer everything that's mathematically true about the network. It was to tell them the smallest thing they'd actually need to change."</blockquote>
+
+          <h2 id="pipeline">Building the Computational Framework</h2>
+          <p>Underneath that description is a substantial computational pipeline, built layer by layer:</p>
+
+          <ul>
+            <li><strong>Genome-scale network reconstruction.</strong> Before any optimization could run, the target organism's metabolism had to be represented as a genome-scale stoichiometric model &mdash; every relevant reaction, its stoichiometry, and its gene associations, assembled and curated from the organism's genomic, transcriptomic, and metabolomic data.</li>
+            <li><strong>Flux variability analysis across two strain states.</strong> The core computational step compares the feasible flux ranges of the reference (wild-type) network against the feasible flux ranges of a network constrained to match observed or desired overproduction behavior, reaction by reaction across the entire model &mdash; not just along the pathway a human would have guessed mattered.</li>
+            <li><strong>Combinatorial reduction to a minimal set.</strong> Identifying which fluxes must change is only half the problem; the harder computational step is reducing that list to a minimal combination of genetic interventions that's jointly sufficient, since flux requirements interact with each other and a naive union of individually-necessary changes is usually far larger than what's actually needed.</li>
+            <li><strong>Validation against a real, well-studied system.</strong> We applied the framework to succinate overproduction in <em>Escherichia coli</em>, a system with enough independent experimental literature to sanity-check the method's outputs. OptForce recovered engineering strategies that matched known, intuitive interventions &mdash; a necessary credibility check &mdash; but also surfaced coordinated changes in reactions distant from the core succinate pathway that weren't part of the conventional wisdom, which is exactly the kind of result that justifies building a genome-scale computational tool instead of trusting intuition alone.</li>
+          </ul>
+
+          <h2 id="applications">From Succinate to Butanol to Fragrance Chemicals</h2>
+          <p>A methods paper is only as good as what people build with it afterward, and OptForce turned out to generalize well beyond its original succinate demonstration. In follow-on work, I used the same framework to identify non-native production routes and engineering interventions for microbial 1-butanol production, and to customize interventions for overproducing a range of fatty acids (C6 through C16) in <em>E. coli</em> &mdash; different target molecules, different intervention sets, same underlying optimization machinery. Collaborating with Mattheos Koffas's group, the framework was also adapted to identify genome-scale interventions that cooperatively force carbon flux toward malonyl-CoA, a precursor relevant to flavanone and other polyketide biosynthesis &mdash; showing that the method held up even when the target wasn't a simple linear pathway endpoint but a shared metabolic hub feeding several downstream products.</p>
+
+          <p>The broader validation, though, is industrial: computational strain-design frameworks in this lineage have been used by biotech companies engineering production strains for real manufacturing processes &mdash; including Genomatica's work engineering recombinant <em>E. coli</em> to produce 1,4-butanediol (BDO) at commercial scale. That's the outcome that actually matters for a method like this: not a citation count, but production strains running in a bioreactor somewhere, designed in part by an algorithm rather than pure intuition.</p>
+
+          <h2 id="legacy">A Framework That Outlived the Thesis</h2>
+          <p>Looking back, OptForce was my introduction to a habit of mind that's shown up in every project since, in genomics and diagnostics as much as in metabolic engineering: when you're facing a combinatorially large space of possible interventions, the goal isn't to enumerate everything that's technically true about the system &mdash; it's to mathematically narrow that space down to the smallest, most actionable set someone could actually go implement. Metabolic flux networks, CRISPR guide RNA libraries, sequencing depletion panels &mdash; the objects are different, but the underlying discipline of turning "everything that could matter" into "here's what to actually do" is the same one I learned first in a systems-engineering framework applied to <em>E. coli</em> metabolism, a decade before I applied it to a virus.</p>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══════════════════════ MORE CASE STUDIES ═══════════════════════ -->
+  <section class="article__more">
+    <div class="container">
+      <div class="section__header reveal">
+        <div class="section__label">Keep Reading</div>
+        <h2 class="section__title">More Case Studies</h2>
+      </div>
+      <div class="more-case__grid" id="moreCaseStudies" data-current-slug="optforce-metabolic-engineering"></div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════ FOOTER ═══════════════════════ -->
+  <footer class="footer">
+    <div class="container footer__inner">
+      <div class="footer__left">
+        <span class="footer__name">Sridhar Ranganathan, Ph.D.</span>
+        <span class="footer__tagline">Bioinformatics &middot; Genomics &middot; AI/ML</span>
+      </div>
+      <div class="footer__links">
+        <a href="../index.html#about">About</a>
+        <a href="../index.html#experience">Experience</a>
+        <a href="index.html">Case Studies</a>
+        <a href="../index.html#contact">Contact</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="../case-studies-data.js"></script>
+  <script src="../main.js"></script>
+</body>
+</html>

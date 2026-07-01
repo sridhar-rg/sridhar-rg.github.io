@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="How CRISPR-based depletion turned metagenomic sequencing into a zero-day pathogen detection platform — from a $750K BARDA contract to a ~$24M EU consortium award." />
+  <title>Zero-Day Pandemic Preparedness | Sridhar Ranganathan</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+
+  <!-- ═══════════════════════ NAVIGATION ═══════════════════════ -->
+  <nav class="nav" id="nav">
+    <div class="nav__inner">
+      <a class="nav__logo" href="../index.html">SR</a>
+      <ul class="nav__links" id="navLinks">
+        <li><a href="../index.html#about">About</a></li>
+        <li><a href="../index.html#highlights">Highlights</a></li>
+        <li><a href="../index.html#experience">Experience</a></li>
+        <li><a href="index.html" class="active">Featured Work</a></li>
+        <li><a href="../index.html#skills">Skills</a></li>
+        <li><a href="../publications/index.html">Publications</a></li>
+        <li><a href="../index.html#blog">Blog</a></li>
+        <li><a href="../index.html#contact">Contact</a></li>
+      </ul>
+      <button class="nav__toggle" id="navToggle" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ═══════════════════════ ARTICLE HEADER ═══════════════════════ -->
+  <header class="article__header">
+    <div class="container">
+      <a href="index.html" class="article__back reveal">&larr; Back to Case Studies</a>
+      <div class="reveal">
+        <div class="article__meta">
+          <span class="tag tag--accent">Jumpcode Genomics</span>
+          <span class="article__date">2022 &ndash; Present</span>
+          <span class="article__read-time">8 min read</span>
+        </div>
+        <h1 class="article__title">Zero-Day Pandemic Preparedness</h1>
+        <p class="article__subtitle">How a CRISPR depletion technique built for cleaning up RNA-seq libraries became the computational core of an infectious-disease detection platform &mdash; and turned a $750K BARDA contract into a ~$24M European instrument program.</p>
+        <div class="article__stats">
+          <span class="project-card__stat">$750K BARDA</span>
+          <span class="project-card__stat">~$24M HaDEA</span>
+          <span class="project-card__stat">~1.2M CRISPR-gRNAs</span>
+          <span class="project-card__stat">Cell Reports Methods, 2023</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="article__body">
+    <div class="container">
+
+      <figure class="article__hero-image reveal">
+        <img class="article__hero-img" src="../assets/images/sars-cov-2-illustration.jpg" alt="Molecular illustration of the SARS-CoV-2 coronavirus" />
+      </figure>
+      <p style="text-align:center; margin-top:-2.5rem; margin-bottom: 3rem; font-size: 0.8rem; color: var(--text-muted); font-style: italic;">
+        Illustration: Veronica Falconieri Hays, for <a href="https://www.scientificamerican.com/article/a-visual-guide-to-the-sars-cov-2-coronavirus/" target="_blank" rel="noopener noreferrer">"A Visual Guide to the SARS-CoV-2 Coronavirus,"</a> Scientific American.
+      </p>
+
+      <div class="article__layout">
+        <aside class="article__toc reveal">
+          <div class="article__toc-label">On This Page</div>
+          <ol>
+            <li><a href="#challenge">The Problem With Looking for Everything</a></li>
+            <li><a href="#approach">The Scientific Approach</a></li>
+            <li><a href="#pipeline">Building the Computational Pipeline</a></li>
+            <li><a href="#scale">From Proof-of-Concept to a $24M Instrument</a></li>
+            <li><a href="#impact">What This Means Going Forward</a></li>
+          </ol>
+        </aside>
+
+        <div class="article__content reveal">
+
+          <h2 id="challenge">The Problem With Looking for Everything</h2>
+          <p>Every diagnostic test ever built starts with a question: what are you looking for? PCR tests want a specific gene target. Antigen tests want a specific protein. Even most sequencing-based diagnostics are designed around a shortlist of known suspects &mdash; a panel of the twelve respiratory viruses you expect to see this season, say. That works well until the pathogen on the other side of the exam room is one nobody put on the list.</p>
+
+          <p>That's the scenario public-health agencies call "Disease X" &mdash; the pathogen that doesn't have a name yet. Metagenomic sequencing is the only realistic way to catch it, because it doesn't ask "is this Pathogen A, B, or C?" It sequences everything in a sample indiscriminately and lets the bioinformatics sort out what's there afterward. In theory, that means a metagenomic assay could have flagged SARS-CoV-2 in a nasal swab in December 2019, months before anyone had a name for it, a genome to align to, or a primer set to run.</p>
+
+          <p>In practice, metagenomics has a signal-to-noise problem that borders on absurd. A nasopharyngeal swab is overwhelmingly human. Ribosomal RNA and a few dozen highly expressed housekeeping genes routinely eat up 80&ndash;90% of the reads in a total RNA-seq library. If a patient is genuinely infected, the pathogen's genetic material might make up a fraction of a percent of the sequencing output &mdash; and you've spent most of your sequencing budget confirming, again, that human ribosomes exist. At the depth most labs can afford, a low-titer or early-stage infection can simply disappear into the noise. This is the problem I spent a meaningful chunk of my time at Jumpcode Genomics trying to solve, and it's the reason a company known for cleaning up RNA-seq libraries for basic researchers ended up co-authoring a diagnostics paper and holding a BARDA contract.</p>
+
+          <h2 id="approach">The Scientific Approach</h2>
+          <p>The core idea is not subtle, which is part of why it works: if the noise is a known, finite set of molecules, you can remove them before sequencing rather than filtering them out afterward. Jumpcode's CRISPRclean platform already did exactly this for basic RNA-seq &mdash; using Cas9 ribonucleoprotein complexes (RNPs) programmed with guide RNAs to cut and deplete unwanted transcripts from a library during prep, before a single read is generated. The insight that turned this into a diagnostics platform was recognizing that the "noise" in a metagenomic sample <em>is</em> the same category of molecule: overwhelmingly human rRNA and housekeeping transcripts. Deplete those, and the fraction of your sequencing budget spent on the pathogen goes up by an order of magnitude or more, without touching the pathogen sequence itself.</p>
+
+          <p>That last clause is the part that actually needed proving, and it's why this was a computational biology problem as much as a wet-lab one. You cannot design a depletion strategy against "human RNA" as a category and hope it doesn't collaterally damage the very sequences a metagenomic classifier needs to identify a novel virus. Any guide RNA library aimed at ribosomal and housekeeping transcripts has to be validated computationally against the reference genomes of the pathogens you're trying to detect &mdash; and, critically, against pathogens you haven't sequenced yet, since a truly agnostic assay has to generalize to genomes that don't exist in any database yet. We built and ran that specificity analysis before ever touching a nasal swab, and it's the reason the depletion strategy could credibly claim to be pathogen-agnostic rather than pathogen-specific with extra steps.</p>
+
+          <p>We tested the hypothesis directly on nasal samples from patients who had tested positive for SARS-CoV-2, comparing standard metatranscriptomic sequencing against the same libraries after CRISPR-RNP depletion of abundant human RNA. The result, published in 2023 in <em>Cell Reports Methods</em>, showed exactly what the arithmetic predicted: depletion increased both sensitivity and specificity for detecting the virus, because a larger share of every sequencing run was now doing useful work instead of re-confirming human ribosomal architecture.</p>
+
+          <blockquote class="article__pullquote">"The virus was always in the sample. The problem was never detection sensitivity in the abstract — it was that we were burying the signal under our own biology and calling it noise."</blockquote>
+
+          <h2 id="pipeline">Building the Computational Pipeline</h2>
+          <p>Proving the concept on a benchtop Illumina run is one exercise. Making it work as a fieldable diagnostic workflow is a different, much larger one, and this is where most of my actual working hours went. A few of the harder problems, in the order we hit them:</p>
+
+          <ul>
+            <li><strong>Designing at a scale nobody had attempted.</strong> A depletion panel comprehensive enough to meaningfully clear out human transcriptomic noise, robust enough to work across individual genetic variation, and specific enough to avoid off-target effects elsewhere in the genome required assembling a guide RNA library on the order of 1.2 million CRISPR-gRNAs &mdash; computationally designed, filtered for specificity, and then synthesized and deployed together in a single one-pot depletion reaction. To my knowledge, this remains the first time more than a million distinct Cas9-RNP complexes have been synthesized and used together in any biotechnological context, and getting there required rethinking gRNA design, off-target scoring, and synthesis logistics as a pipeline problem rather than a one-off experiment.</li>
+            <li><strong>Platform-agnostic read processing.</strong> As principal technical author on the BARDA proposal, I designed the bioinformatics workflow specifically around Oxford Nanopore (ONT MinION) sequencing &mdash; a deliberate choice, since nanopore's real-time, portable sequencing is what makes a "point-of-need" diagnostic plausible outside a reference lab. That meant building a pipeline tuned to nanopore's basecalling and error profile: adapter and quality trimming suited to long-read data, aggressive computational subtraction of host-derived reads (the depletion step reduces this burden substantially, but doesn't eliminate it at the bioinformatics layer), and taxonomic classification against curated pathogen reference sets, all built to run fast enough that results could plausibly inform a clinical decision the same day.</li>
+            <li><strong>Benchmarking sensitivity honestly.</strong> A diagnostic pipeline is only as credible as its limit-of-detection characterization. We built out titration experiments &mdash; dropping viral load in a background of real clinical nasal RNA down toward the assay's floor &mdash; and used depleted vs. non-depleted library pairs as internal controls, so every sensitivity claim in the published work was a direct, matched comparison rather than a comparison against a different study's numbers.</li>
+            <li><strong>Designing for a database that doesn't exist yet.</strong> Agnostic pathogen detection means your classifier will eventually see a read that doesn't match anything in RefSeq. The pipeline had to make a defensible decision in that situation &mdash; flag it as "unclassified but present at anomalous abundance" rather than silently discard it &mdash; because that flag is the entire point of the exercise. A system that only ever reports pathogens it already knew about isn't zero-day anything.</li>
+          </ul>
+
+          <p>None of this is exotic algorithmically &mdash; there's no proprietary machine-learning model doing the classification, and I think that's a feature, not a limitation. In a regulated diagnostics context, a pipeline built from well-characterized, auditable steps (quality control, host subtraction, reference-based and unclassified-read triage) is a pipeline you can actually validate, document, and eventually get through a clinical-approval process. The genuinely hard engineering was upstream of the classifier: making sure the library going into the sequencer was clean enough that the classifier's job became tractable in the first place.</p>
+
+          <h2 id="scale">From Proof-of-Concept to a $24M Instrument</h2>
+          <p>The BARDA contract ($750K) funded the work that got this from a laboratory demonstration to a workflow BARDA and its partners took seriously as an infectious-disease surveillance tool. That, in turn, is what caught the attention of HaDEA, the EU's Health and Digital Executive Agency, which in late 2024 backed a consortium program &mdash; reported at up to ~$24M &mdash; to build a fully automated, cloud-connected in-vitro diagnostic (IVD) instrument as Phase 1 of a European pandemic-preparedness initiative.</p>
+
+          <p>That instrument is a different order of engineering problem than a manual wet-lab protocol, because it has to perform RNA extraction, library preparation, CRISPR-based depletion, and library synthesis in one automated, closed system &mdash; and, critically, couple that automation to real-time base-calling retrieval from an Illumina MiSeq i100, so that the instrument's software can make sequencing-progress decisions (how much data is enough, when to stop, when to flag an anomaly) while the run is still happening rather than after the fact. Bioinformatics on this project stopped being a downstream analysis step and became a real-time control system embedded in hardware. We also secured CDC funding to begin the clinical-approval process in the US, running in parallel with the European regulatory track.</p>
+
+          <h2 id="impact">What This Means Going Forward</h2>
+          <p>The satisfying part of this project, for me, is the shape of the arc: a technique built to solve a benchtop annoyance for RNA-seq researchers &mdash; too many reads wasted on ribosomal RNA &mdash; turned out to be exactly the missing piece for a much bigger problem in infectious-disease surveillance, once someone did the computational work to prove the depletion wouldn't compromise the very signal a diagnostic needs to preserve. It's also a reminder that "zero-day" detection isn't really a machine-learning problem or a database problem first. It's a signal-processing problem, and sometimes the most direct fix is upstream of the algorithm entirely &mdash; in what you let onto the flow cell in the first place.</p>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══════════════════════ MORE CASE STUDIES ═══════════════════════ -->
+  <section class="article__more">
+    <div class="container">
+      <div class="section__header reveal">
+        <div class="section__label">Keep Reading</div>
+        <h2 class="section__title">More Case Studies</h2>
+      </div>
+      <div class="more-case__grid" id="moreCaseStudies" data-current-slug="zero-day-pandemic-preparedness"></div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════ FOOTER ═══════════════════════ -->
+  <footer class="footer">
+    <div class="container footer__inner">
+      <div class="footer__left">
+        <span class="footer__name">Sridhar Ranganathan, Ph.D.</span>
+        <span class="footer__tagline">Bioinformatics &middot; Genomics &middot; AI/ML</span>
+      </div>
+      <div class="footer__links">
+        <a href="../index.html#about">About</a>
+        <a href="../index.html#experience">Experience</a>
+        <a href="index.html">Case Studies</a>
+        <a href="../index.html#contact">Contact</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="../case-studies-data.js"></script>
+  <script src="../main.js"></script>
+</body>
+</html>

@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="How a cloud-based CRISPR design portal and machine-learning-driven guide RNA design grew Thermo Fisher's gene-editing product revenue five-fold in a year." />
+  <title>TrueDesign &amp; SeqScreener | Sridhar Ranganathan</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+
+  <!-- ═══════════════════════ NAVIGATION ═══════════════════════ -->
+  <nav class="nav" id="nav">
+    <div class="nav__inner">
+      <a class="nav__logo" href="../index.html">SR</a>
+      <ul class="nav__links" id="navLinks">
+        <li><a href="../index.html#about">About</a></li>
+        <li><a href="../index.html#highlights">Highlights</a></li>
+        <li><a href="../index.html#experience">Experience</a></li>
+        <li><a href="index.html" class="active">Featured Work</a></li>
+        <li><a href="../index.html#skills">Skills</a></li>
+        <li><a href="../publications/index.html">Publications</a></li>
+        <li><a href="../index.html#blog">Blog</a></li>
+        <li><a href="../index.html#contact">Contact</a></li>
+      </ul>
+      <button class="nav__toggle" id="navToggle" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ═══════════════════════ ARTICLE HEADER ═══════════════════════ -->
+  <header class="article__header">
+    <div class="container">
+      <a href="index.html" class="article__back reveal">&larr; Back to Case Studies</a>
+      <div class="reveal">
+        <div class="article__meta">
+          <span class="tag tag--accent">Thermo Fisher Scientific</span>
+          <span class="article__date">2012 &ndash; 2020</span>
+          <span class="article__read-time">8 min read</span>
+        </div>
+        <h1 class="article__title">TrueDesign&reg; &amp; SeqScreener&trade;</h1>
+        <p class="article__subtitle">A cloud portal that let scientists design a CRISPR experiment without becoming bioinformaticians first &mdash; backed by machine-learning models that had to predict biology it couldn't yet observe.</p>
+        <div class="article__stats">
+          <span class="project-card__stat">5&times; revenue in 12 months</span>
+          <span class="project-card__stat">Top 10 Innovation, The Scientist, 2016</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="article__body">
+    <div class="container">
+
+      <figure class="article__hero-image reveal">
+        <img class="article__hero-img" src="../assets/logos/thermofisher.png" alt="Thermo Fisher Scientific logo" style="max-height: 160px;" />
+      </figure>
+
+      <div class="article__layout">
+        <aside class="article__toc reveal">
+          <div class="article__toc-label">On This Page</div>
+          <ol>
+            <li><a href="#gap">A Portal for People Who Don't Want to Become Bioinformaticians</a></li>
+            <li><a href="#approach">The Scientific Approach: Predicting Biology You Haven't Observed Yet</a></li>
+            <li><a href="#pipeline">Building the Computational Pipeline &mdash; and the Product Around It</a></li>
+            <li><a href="#revenue">From Tool to Revenue Engine</a></li>
+            <li><a href="#lesson">What the 5&times; Number Actually Means</a></li>
+          </ol>
+        </aside>
+
+        <div class="article__content reveal">
+
+          <h2 id="gap">A Portal for People Who Don't Want to Become Bioinformaticians</h2>
+          <p>By the early 2010s, CRISPR-Cas9 had gone from a bacterial immune mechanism to the most consequential tool in molecular biology, and a huge population of researchers who had never designed a guide RNA in their lives suddenly needed to. Most of them were not going to learn to script sequence alignments or parse a genome browser to get there &mdash; and they shouldn't have had to. The gap between "I want to knock out this gene" and "here is a validated set of CRISPR reagents to order" was, for the average bench scientist, a wall of unfamiliar bioinformatics.</p>
+
+          <p>TrueDesign&reg; Genome Editing Portal was Thermo Fisher's answer to that gap, and I was the lead bioinformatics engineer who built it: a cloud-based tool where a researcher could describe the edit they wanted &mdash; a knockout, a gene tag, an insertion, a deletion, a point mutation &mdash; and get back a designed, validated set of CRISPR reagents they could order directly through Thermo Fisher's eCommerce system, no bioinformatics background required. Getting there meant starting from the customer side of the wall, not the algorithm side: I ran customer interviews to understand where researchers actually got stuck, designed the conceptual user interface around those failure points, and only then wrote the CRISPR, oligo, and primer design algorithms that the interface needed to hide from the user entirely.</p>
+
+          <h2 id="approach">The Scientific Approach: Predicting Biology You Haven't Observed Yet</h2>
+          <p>The genuinely hard scientific problem sitting underneath TrueDesign wasn't the interface &mdash; it was that a good CRISPR design tool has to make three separate predictions about biology that hasn't happened yet: what a given guide RNA's on-target editing efficiency will be, what its off-target risk profile looks like elsewhere in the genome, and, for a successful edit, which DNA repair pathway the cell is likely to use to resolve the cut &mdash; non-homologous end joining, microhomology-mediated end joining, or homologous recombination &mdash; each of which produces a different editing outcome. Around 2015, as CRISPR and machine learning were both maturing at the same time, I championed bringing regression and feature-learning approaches into Thermo Fisher's internal design algorithms specifically to make these three predictions more reliable than the heuristic rules the field had been using.</p>
+
+          <p>The models were trained on carefully curated experimental data and used a feature set assembled from what actually seemed to drive editing outcomes biologically: sequence motifs surrounding the gRNA target site, local chromatin accessibility, PAM-site sequence preferences, and the density of other CRISPR target sites in the immediate genomic neighborhood, which affects both off-target competition and how confidently you can attribute an observed edit to the intended guide. None of these features individually was a novel discovery &mdash; the contribution was systematically combining them into predictive models good enough to trust in a product customers would pay for and use to make real experimental decisions.</p>
+
+          <h2 id="pipeline">Building the Computational Pipeline &mdash; and the Product Around It</h2>
+          <p>Turning that modeling work into something that could actually ship required several layers most people don't see when they use a design portal:</p>
+
+          <ul>
+            <li><strong>Model-to-product integration.</strong> The efficiency, off-target, and outcome-prediction models weren't research artifacts sitting in a notebook &mdash; they had to run inside TrueDesign's design pipeline in real time, ranking and filtering candidate guide RNAs as a customer typed in a target gene, and doing so fast enough that the interaction still felt like using a normal web application rather than waiting on a batch job.</li>
+            <li><strong>Genome-wide CRISPR-gRNA databases.</strong> In the spirit of the Zhang lab's GeCKO libraries, I built out annotated, pre-scored CRISPR-gRNA databases covering large fractions of the human and mouse genomes, so that customers building genome-wide knockout screens could pull ready-made, quality-scored guide sets rather than waiting on a bespoke design run &mdash; and so that Thermo Fisher's LentiArray&trade; CRISPR and TrueGuide&reg; Synthetic gRNA library products had a validated design backbone behind them from day one. That work was later recognized as a Top 10 Innovation of 2016 by <em>The Scientist</em>.</li>
+            <li><strong>Closing the loop with SeqScreener&trade;.</strong> Designing an edit is only half the workflow; confirming it worked is the other half. SeqScreener&trade; was the Gene Edit confirmation tool I built alongside TrueDesign, analyzing a customer's post-edit sequencing data to verify whether the intended edit actually occurred, and if so, cleanly or with unintended byproducts &mdash; turning the design portal and the confirmation tool into two ends of a single customer workflow rather than two disconnected products.</li>
+            <li><strong>A multi-omics characterization layer underneath it all.</strong> For customers and internal teams needing deeper characterization of edited cell lines than a simple confirmation call, I helped build an integrated analysis platform combining whole-genome sequencing, Guide-Seq, ATAC-seq, and flow cytometry data &mdash; letting a research team see not just whether an edit landed, but its broader footprint across the genome and chromatin landscape, which mattered for functional genomics screens run for pharmaceutical and research partners.</li>
+            <li><strong>Global engineering, not a single-site build.</strong> None of this shipped from one location. I led global bioinformatics engineering teams across Germany, India, and Singapore, coordinating the development of Ion Torrent NGS analysis pipelines &mdash; including multi-sample variant-calling workflows for interpreting gene-editing outcomes &mdash; alongside product management and customer support so that a design decision made in one time zone didn't quietly break a downstream pipeline maintained in another.</li>
+          </ul>
+
+          <h2 id="revenue">From Tool to Revenue Engine</h2>
+          <p>The commercial result is the number that's easiest to state and hardest to fully credit to any one factor: within 12 months of launch, TrueDesign drove a five-fold increase in Thermo Fisher's CRISPR and TALEN product revenue. Part of that came from simply removing friction &mdash; a customer who used to need a collaborator or a consultant to design a CRISPR experiment could now do it themselves in an afternoon. Part of it came from the direct link to Thermo Fisher's ordering system, which collapsed the gap between "I've designed my experiment" and "my reagents are on the way" to essentially zero clicks. And part of it came from the underlying design quality being good enough that researchers didn't have to redesign and reorder when their first guide RNA underperformed &mdash; which, in a consumables business, matters as much for repeat purchasing as for the first sale.</p>
+
+          <p>The pipeline also fed automated LIMS systems connecting laboratory liquid handlers &mdash; Tecan, BioMek, and similar platforms &mdash; into the cell-engineering workflow end to end: guide design, cell transfection or delivery, incubation and growth, clonal picking, and confirmation, run with less manual bioinformatics intervention at each step than the process had required before.</p>
+
+          <h2 id="lesson">What the 5&times; Number Actually Means</h2>
+          <p>The lesson I took from this project, and the one I've carried into every product-facing bioinformatics role since, is that a machine-learning model's real product value isn't its accuracy on a held-out test set &mdash; it's whether the model is embedded somewhere a customer will actually encounter it at the exact moment they need to make a decision. A great off-target prediction model sitting in an internal research report changes nothing. The same model, surfaced automatically while a customer is picking between five candidate guide RNAs in a web interface, changes what they order. TrueDesign's revenue impact came from treating "get the model in front of the decision" as seriously as getting the model right in the first place.</p>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══════════════════════ MORE CASE STUDIES ═══════════════════════ -->
+  <section class="article__more">
+    <div class="container">
+      <div class="section__header reveal">
+        <div class="section__label">Keep Reading</div>
+        <h2 class="section__title">More Case Studies</h2>
+      </div>
+      <div class="more-case__grid" id="moreCaseStudies" data-current-slug="truedesign-genome-editing-portal"></div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════ FOOTER ═══════════════════════ -->
+  <footer class="footer">
+    <div class="container footer__inner">
+      <div class="footer__left">
+        <span class="footer__name">Sridhar Ranganathan, Ph.D.</span>
+        <span class="footer__tagline">Bioinformatics &middot; Genomics &middot; AI/ML</span>
+      </div>
+      <div class="footer__links">
+        <a href="../index.html#about">About</a>
+        <a href="../index.html#experience">Experience</a>
+        <a href="index.html">Case Studies</a>
+        <a href="../index.html#contact">Contact</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="../case-studies-data.js"></script>
+  <script src="../main.js"></script>
+</body>
+</html>

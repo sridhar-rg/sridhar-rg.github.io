@@ -23,6 +23,7 @@
         <li><a href="#work">Featured Work</a></li>
         <li><a href="#skills">Skills</a></li>
         <li><a href="#publications">Publications</a></li>
+        <li><a href="#blog">Blog</a></li>
         <li><a href="#contact">Contact</a></li>
       </ul>
       <button class="nav__toggle" id="navToggle" aria-label="Toggle menu">
@@ -334,14 +335,14 @@
       <div class="section__header reveal">
         <div class="section__label">Featured Work</div>
         <h2 class="section__title">Case Studies</h2>
-        <p class="section__subtitle">Six flagship projects spanning diagnostics, clinical genomics, and metabolic engineering. Expand any card for the full story.</p>
+        <p class="section__subtitle">Six flagship projects spanning diagnostics, clinical genomics, and metabolic engineering. Here are three — read the rest in the full archive.</p>
       </div>
 
       <div class="work__grid">
 
         <div class="project-card reveal">
           <div class="project-card__img-wrap">
-            <img src="assets/images/sars-cov-2.png" alt="SARS-CoV-2 sequencing depth comparison" />
+            <img src="assets/images/sars-cov-2-illustration.jpg" alt="Molecular illustration of the SARS-CoV-2 coronavirus" />
           </div>
           <div class="project-card__body">
             <div class="project-card__tag">Jumpcode Genomics</div>
@@ -351,14 +352,7 @@
               <span class="project-card__stat">$750K BARDA</span>
               <span class="project-card__stat">~$24M HaDEA</span>
             </div>
-            <details class="project-card__details">
-              <summary>Read Full Case Study</summary>
-              <div class="project-card__full">
-                <p>Co-led the competitive proposal that won a $750K BARDA contract to develop an automated workflow leveraging CRISPR depletion technology to detect infectious agents via metatranscriptomic sequencing. I designed the full bioinformatics workflow for nanopore (ONT MinION) data as principal technical author. In 2023, our team published a proof-of-concept demonstrating that CRISPR-RNPs designed to remove abundant human-derived RNA (rRNA, housekeeping genes) increased sensitivity and specificity for detecting SARS-CoV-2 in nasal samples (<em>Cell Reports Methods</em>, 2023).</p>
-                <p>We went on to assemble pipelines producing ~1.2 million CRISPR-gRNAs synthesized and used in a one-pot depletion reaction &mdash; to my knowledge, the first endeavor to successfully synthesize and use more than a million Cas9-RNPs in any biotechnological context.</p>
-                <p>In late 2024, the HaDEA organization (EU) recognized the importance of this technology, funding a consortium-funded program (~$24M) to develop a fully automated, cloud-connected IVD instrument performing RNA extraction, library preparation, depletion, and real-time base-calling from an Illumina MiSeq i100 &mdash; Phase 1 of a European pandemic-preparedness program. We also received CDC funding to initiate clinical approval in the US.</p>
-              </div>
-            </details>
+            <a class="project-card__cta" href="case-studies/zero-day-pandemic-preparedness.html">Read Full Case Study <span>&rarr;</span></a>
           </div>
         </div>
 
@@ -374,14 +368,7 @@
               <span class="project-card__stat">~95% FP reduction</span>
               <span class="project-card__stat">~$450K NHGRI SBIR</span>
             </div>
-            <details class="project-card__details">
-              <summary>Read Full Case Study</summary>
-              <div class="project-card__full">
-                <p>Pseudogenes are highly similar replicas of functional genes; molecules originating from them frequently contaminate sequencing datasets by diluting or exaggerating variant calls. A classic example: diagnosing Lynch syndrome is complicated by PMS2CL, a pseudogene so homologous to PMS2 exons 12&ndash;15 that reads routinely misalign, producing unreliable variant calls in a clinically critical region.</p>
-                <p>Partnering with Revvity Omics (formerly PerkinElmer), we developed a CRISPR-based depletion technology to precisely remove pseudogene-derived molecules during DNA sequencing library prep. The bioinformatics challenge was two-pronged: designing CRISPR-gRNAs with high specificity against near-identical pseudogene/parent-gene pairs (using CRISflash across multiple Cas flavors &mdash; Cpf1, Cas12a, Cas13, SpCas9, combined for WGS assays), and then validating the approach with clinically used variant-calling pipelines.</p>
-                <p>Targeting the pseudogenes of ABCD1, GBA1, and CYP21A2, we demonstrated ~95% elimination of false-positive variant calls. This proof-of-concept data was instrumental in the successful turnaround of a ~$450K NHGRI SBIR Phase I award, and we're extending the approach toward breast- and colon-cancer screening panels covering &gt;4,000 pseudogenes.</p>
-              </div>
-            </details>
+            <a class="project-card__cta" href="case-studies/newborn-screening-pseudogene-depletion.html">Read Full Case Study <span>&rarr;</span></a>
           </div>
         </div>
 
@@ -397,81 +384,14 @@
               <span class="project-card__stat">10x Genomics partner</span>
               <span class="project-card__stat">PacBio partner</span>
             </div>
-            <details class="project-card__details">
-              <summary>Read Full Case Study</summary>
-              <div class="project-card__full">
-                <p>Single-cell RNA-seq requires sequencing thousands of cells at high depth, yet the technology relies on reads mapping to only a few hundred genes &mdash; the rest, mostly ribosomal RNA and housekeeping genes, get sequenced and discarded. My team assembled public scRNA-seq datasets across tissue types, identified which genes are unused by cell-type classification tools (Seurat, Cell Ranger), and designed CRISPR-gRNAs to selectively deplete those transcripts while leaving the informative transcriptome untouched &mdash; accounting for platform-specific quirks like 10x Genomics' 3&prime;-end capture versus other technologies' 5&prime;-end or whole-transcript capture.</p>
-                <p>The resulting DepleteX Single Cell RNA Boost kit was recognized by both 10x Genomics and Pacific Biosciences as a companion product. For PacBio specifically, I incorporated their bioinformatics pipelines to functionally evaluate CRISPR-based nucleic-acid depletion in SMRT-seq library prep for their MAS-Seq and MAS-Iso-Seq workflows, and jointly provided direct customer support for shared PacBio/Jumpcode customers.</p>
-                <p>The same underlying depletion platform also powers ribodepletion products compatible with Revvity, NEBNext, Illumina, Takara, Watchmaker, and Qiagen library-prep workflows &mdash; to date, the highest revenue-generating product line at Jumpcode.</p>
-              </div>
-            </details>
+            <a class="project-card__cta" href="case-studies/crisprclean-single-cell-genomics.html">Read Full Case Study <span>&rarr;</span></a>
           </div>
         </div>
 
-        <div class="project-card reveal">
-          <div class="project-card__img-wrap">
-            <img src="assets/images/crispr-depletion.png" alt="CRISPR depletion platform diagram" />
-          </div>
-          <div class="project-card__body">
-            <div class="project-card__tag">Jumpcode Genomics</div>
-            <h3 class="project-card__title">CRISPR-Based Depletion Platform</h3>
-            <p class="project-card__hook">A general-purpose CRISPR depletion platform solving whole-genome sequencing's "wasted coverage" problem across metagenomics, agri-genomics, and gene regulation.</p>
-            <div class="project-card__stats">
-              <span class="project-card__stat">Metagenomics</span>
-              <span class="project-card__stat">Agri-genomics</span>
-            </div>
-            <details class="project-card__details">
-              <summary>Read Full Case Study</summary>
-              <div class="project-card__full">
-                <p>Whole-genome sequencing produces uniform coverage across the genome &mdash; wasteful when only a fraction is relevant to the research question, and a real limitation for polyploid or large genomes where coverage per base is diluted. Several fields hit this wall directly: metagenomics studies where host DNA dominates and dilutes microbial signal; agri-genomics genotyping of polyploid plant genomes where &lt;5% of the genome is functional and repetitive elements (45&ndash;70%) crowd out variant discovery; and gene-regulation studies where only 10&ndash;20% of the genome is regulatory and cell-type/environmental variability makes probe-based capture impractical.</p>
-                <p>The CRISPR-based depletion platform I helped build addresses this generally &mdash; selectively removing uninformative or overabundant molecules from a library so that sequencing budget concentrates on the regions that matter, without the cost and design lead-time of a custom capture panel.</p>
-              </div>
-            </details>
-          </div>
-        </div>
+      </div>
 
-        <div class="project-card reveal">
-          <div class="project-card__img-wrap">
-            <img src="assets/logos/thermofisher.png" alt="Thermo Fisher Scientific logo" style="height:190px; object-fit:contain; padding: 2rem;" />
-          </div>
-          <div class="project-card__body">
-            <div class="project-card__tag">Thermo Fisher Scientific</div>
-            <h3 class="project-card__title">TrueDesign&reg; &amp; SeqScreener&trade;</h3>
-            <p class="project-card__hook">Cloud-based CRISPR design and edit-confirmation tools that became the customer-facing front door to Thermo Fisher's gene-editing product line.</p>
-            <div class="project-card__stats">
-              <span class="project-card__stat">Top 10 Innovation 2016</span>
-            </div>
-            <details class="project-card__details">
-              <summary>Read Full Case Study</summary>
-              <div class="project-card__full">
-                <p>The TrueDesign&reg; Genome Editing Portal is a cloud-based, customer-facing bioinformatics tool I developed at Thermo Fisher &mdash; a one-stop shop for gene-editing customers to design and visualize CRISPR experiments spanning knockouts, gene tagging, DNA insertions/deletions, and point mutations, with a direct link to Thermo Fisher's eCommerce ordering system. I functioned as lead bioinformatics engineer: conducting customer interviews, designing the conceptual UI, and coding the underlying CRISPR/oligo/primer design algorithms. Alongside it, I built SeqScreener&trade;, a Gene Edit confirmation tool for analyzing sequencing data to verify successful edits.</p>
-                <p>In parallel, I championed the introduction of regression and feature-learning models to CRISPR-gRNA design &mdash; building models that predicted in vivo edit outcomes (NHEJ/MMEJ/HR), off-target effects, and CRISPR efficiency from curated experimental data (sequence motifs, chromatin accessibility, PAM-site preferences). These models powered the LentiArray&trade; CRISPR and TrueGuide&reg; Synthetic gRNA libraries, named a <strong>Top 10 Innovation of 2016</strong> by <em>The Scientist</em>, and I built out the annotated CRISPR-gRNA databases (in the spirit of the Zhang lab's GeCKO libraries) that powered genome-wide knockout screening products &mdash; connected end-to-end to Thermo Fisher's ordering and LIMS systems.</p>
-              </div>
-            </details>
-          </div>
-        </div>
-
-        <div class="project-card reveal">
-          <div class="project-card__img-wrap">
-            <img src="assets/images/optforce-1.png" alt="OptForce metabolic engineering framework diagram" />
-          </div>
-          <div class="project-card__body">
-            <div class="project-card__tag">Penn State &middot; Maranas Lab</div>
-            <h3 class="project-card__title">OptForce: Computational Strain Design</h3>
-            <p class="project-card__hook">An optimization framework identifying the minimal genetic interventions needed to overproduce target biochemicals in engineered microbes.</p>
-            <div class="project-card__stats">
-              <span class="project-card__stat">PLoS Comp Bio, 2010</span>
-            </div>
-            <details class="project-card__details">
-              <summary>Read Full Case Study</summary>
-              <div class="project-card__full">
-                <p>OptForce is a computational optimization framework for metabolic engineering that systematically identifies genetic interventions required to achieve targeted overproduction of biochemicals in microorganisms. Unlike traditional approaches, it leverages flux measurements and mathematically contrasts wild-type versus overproducing strains to pinpoint which metabolic reaction fluxes must increase, decrease, or be eliminated &mdash; grouping these hierarchically to extract a minimal, actionable "FORCE set" of genetic modifications.</p>
-                <p>Applied to succinate production in <em>E. coli</em>, OptForce revealed both intuitive and unforeseen engineering strategies, including coordinated changes distant from the core product pathway. The framework has seen industrial adoption &mdash; for example, by Genomatica in engineering recombinant bacterial strains to synthesize 1,4-butanediol (BDO).</p>
-              </div>
-            </details>
-          </div>
-        </div>
-
+      <div class="work__see-all reveal">
+        <a href="case-studies/index.html" class="btn btn--outline">View All Case Studies &rarr;</a>
       </div>
     </div>
   </section>
@@ -571,8 +491,9 @@
   <section class="section section--dark" id="publications">
     <div class="container">
       <div class="section__header reveal">
-        <div class="section__label">Publications &amp; Press</div>
+        <div class="section__label">Publications</div>
         <h2 class="section__title">Selected Publications</h2>
+        <p class="section__subtitle">Four highlights from a publication record spanning genomics/CRISPR diagnostics and metabolic engineering &mdash; the full list is on Google Scholar and the publications archive below.</p>
       </div>
 
       <div class="pub-list">
@@ -585,7 +506,7 @@
         <div class="pub-card reveal">
           <span class="pub-card__year">2023</span>
           <div class="pub-card__body">
-            <p>Chan AP, Siddique A, Desplat Y, Choi Y, <strong>Ranganathan S</strong>, Choudhary KS, et al. <a class="pub-link" href="https://pmc.ncbi.nlm.nih.gov/articles/PMC10110940/" target="_blank" rel="noopener noreferrer">A CRISPR-enhanced metagenomic NGS-based diagnostic test for infectious disease.</a> <span class="pub-card__journal">Cell Reports Methods.</span></p>
+            <p>Chan AP, Siddique A, Desplat Y, Choi Y, <strong>Ranganathan S</strong>, Choudhary KS, et al. <a class="pub-link" href="https://pmc.ncbi.nlm.nih.gov/articles/PMC10110940/" target="_blank" rel="noopener noreferrer">A CRISPR-enhanced metagenomic NGS test to improve pandemic preparedness.</a> <span class="pub-card__journal">Cell Reports Methods.</span></p>
           </div>
         </div>
         <div class="pub-card reveal">
@@ -602,12 +523,54 @@
         </div>
       </div>
 
-      <div class="press__list reveal">
-        <a class="tag" href="https://www.prnewswire.com/news-releases/ginkgo-bioworks-partners-with-hadea-in-up-to-24-million-consortium-project-to-deliver-next-generation-agnostic-diagnostics-for-respiratory-viruses-at-the-point-of-care-302381350.html" target="_blank" rel="noopener noreferrer">PR Newswire &middot; HaDEA $24M Consortium Award</a>
-        <a class="tag" href="https://www.prnewswire.com/news-releases/jumpcode-genomics-joins-10x-genomics-compatible-partner-program-cpp-301689916.html" target="_blank" rel="noopener noreferrer">PR Newswire &middot; 10x Genomics Partner Program</a>
-        <a class="tag" href="https://www.pacb.com/products-and-services/applications/rna-sequencing/single-cell-rna-sequencing/" target="_blank" rel="noopener noreferrer">PacBio &middot; Single-Cell RNA Boost</a>
-        <a class="tag" href="https://www.sdbj.com/technology/barda-taps-jumpcode-pathogen-detection-program/" target="_blank" rel="noopener noreferrer">San Diego Business Journal &middot; BARDA Award</a>
-        <a class="tag" href="https://www.thermofisher.com/us/en/home/life-science/genome-editing/invitrogen-truedesign-genome-editor.html" target="_blank" rel="noopener noreferrer">Thermo Fisher &middot; TrueDesign Genome Editor</a>
+      <div class="work__see-all reveal">
+        <a href="publications/index.html" class="btn btn--outline">View All Publications &rarr;</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════ BLOG ═══════════════════════ -->
+  <section class="section section--dark" id="blog">
+    <div class="container">
+      <div class="section__header reveal">
+        <div class="section__label">Writing</div>
+        <h2 class="section__title">From the Blog</h2>
+        <p class="section__subtitle">Notes on bioinformatics, startups, and genomics leadership. Currently in the works &mdash; check back soon.</p>
+      </div>
+
+      <div class="blog__grid">
+
+        <div class="blog-card reveal">
+          <div class="blog-card__tag">AI &amp; Technology</div>
+          <h3 class="blog-card__title">AI Won't Replace the Bioinformatician &mdash; It'll Change the Job Description</h3>
+          <p class="blog-card__excerpt">Where large language models and automation genuinely help a genomics pipeline &mdash; and where decades of biological judgment still can't be replaced.</p>
+          <div class="blog-card__footer">
+            <span class="blog-card__status">Coming Soon</span>
+          </div>
+        </div>
+
+        <div class="blog-card reveal">
+          <div class="blog-card__tag">Startup Lessons</div>
+          <h3 class="blog-card__title">Zero to One: What Founding a Bioinformatics Team Taught Me</h3>
+          <p class="blog-card__excerpt">On building strategy, infrastructure, and a team from nothing &mdash; and the lessons a large company never forces you to learn.</p>
+          <div class="blog-card__footer">
+            <span class="blog-card__status">Coming Soon</span>
+          </div>
+        </div>
+
+        <div class="blog-card reveal">
+          <div class="blog-card__tag">Career</div>
+          <h3 class="blog-card__title">The Lone Bioinformatician</h3>
+          <p class="blog-card__excerpt">Notes on being the only computational voice at the table &mdash; and how to make sure the science doesn't get lost in translation.</p>
+          <div class="blog-card__footer">
+            <span class="blog-card__status">Coming Soon</span>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="blog__see-all reveal">
+        <a href="blog/index.html" class="btn btn--outline">View All Articles &rarr;</a>
       </div>
     </div>
   </section>
