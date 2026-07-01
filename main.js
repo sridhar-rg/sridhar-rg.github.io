@@ -47,8 +47,15 @@
 
 
   // ─── Nav: active link highlight on scroll ─────────────────
-  const sections = Array.from(document.querySelectorAll('section[id]'));
+  // Resolve targets straight from the nav's own hrefs, since a nav
+  // target (e.g. #skills) isn't always a top-level <section>.
   const navItems = Array.from(document.querySelectorAll('.nav__links a'));
+  const sections = navItems
+    .map(link => {
+      const href = link.getAttribute('href');
+      return href && href.startsWith('#') ? document.querySelector(href) : null;
+    })
+    .filter(Boolean);
 
   if (sections.length && navItems.length) {
     const sectionObserver = new IntersectionObserver((entries) => {
