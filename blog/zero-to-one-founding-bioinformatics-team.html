@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="On building strategy, infrastructure, and a bioinformatics team from nothing at a CRISPR startup — and the lessons a large company never forces you to learn." />
+  <title>Zero to One: What Founding a Bioinformatics Team Taught Me | Sridhar Ranganathan</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+
+  <!-- ═══════════════════════ NAVIGATION ═══════════════════════ -->
+  <nav class="nav" id="nav">
+    <div class="nav__inner">
+      <a class="nav__logo" href="../index.html">SR</a>
+      <ul class="nav__links" id="navLinks">
+        <li><a href="../index.html#about">About</a></li>
+        <li><a href="../index.html#highlights">Highlights</a></li>
+        <li><a href="../index.html#experience">Experience</a></li>
+        <li><a href="../index.html#work">Featured Work</a></li>
+        <li><a href="../index.html#skills">Skills</a></li>
+        <li><a href="../publications/index.html">Publications</a></li>
+        <li><a href="index.html" class="active">Blog</a></li>
+        <li><a href="../index.html#contact">Contact</a></li>
+      </ul>
+      <button class="nav__toggle" id="navToggle" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ═══════════════════════ ARTICLE HEADER ═══════════════════════ -->
+  <header class="article__header">
+    <div class="container">
+      <a href="index.html" class="article__back reveal">&larr; Back to Blog</a>
+      <div class="reveal">
+        <div class="article__meta">
+          <span class="tag tag--accent">Startup Lessons</span>
+          <span class="article__date">July 2026</span>
+          <span class="article__read-time">13 min read</span>
+        </div>
+        <h1 class="article__title">Zero to One: What Founding a Bioinformatics Team Taught Me</h1>
+        <p class="article__subtitle">On building strategy, infrastructure, and a team from nothing &mdash; and the lessons a large company never forces you to learn.</p>
+      </div>
+    </div>
+  </header>
+
+  <div class="article__body">
+    <div class="container">
+
+      <div class="article__layout">
+        <aside class="article__toc reveal">
+          <div class="article__toc-label">On This Page</div>
+          <ol>
+            <li><a href="#job-that-was-fine">The Job That Was Fine</a></li>
+            <li><a href="#walking-in">Walking In Without a Map</a></li>
+            <li><a href="#keith-jon">Keith, Jon, and Being Taken Seriously</a></li>
+            <li><a href="#nils-homer">What Nils Homer's Code Taught Me</a></li>
+            <li><a href="#technology">The Technology Underneath Everything Else</a></li>
+            <li><a href="#thousands-of-guides">From a Handful of Guides to Thousands</a></li>
+            <li><a href="#building-people">Building People, Not Just Pipelines</a></li>
+            <li><a href="#director-and-ic">Being the Director and Still Writing the Code</a></li>
+            <li><a href="#where-it-went-sideways">Where It Went Sideways</a></li>
+            <li><a href="#who-belongs">Who Actually Belongs at a Startup</a></li>
+          </ol>
+        </aside>
+
+        <div class="article__content">
+
+          <figure class="article__figure reveal">
+            <img src="../assets/images/zero-to-one-tree.svg" alt="An illustration of a tree grown from a single glowing seed at its roots, where two mentors and the author once knelt. One thin branch reaches up toward a target labeled scRNA-seq that keeps drifting further out of reach. A second, sturdier branch hangs heavy with ripe fruit labeled Ribo-Depletion, sitting in shadow, with fruit fallen and going to dust on the ground beneath it." />
+            <figcaption>Everything in this story grew out of one seed. We just spent most of our strength climbing toward the branch that kept moving, and let the one already heavy with fruit sit in the shade.</figcaption>
+          </figure>
+
+          <h2 id="job-that-was-fine">The Job That Was Fine</h2>
+          <p>I want to start with the part of this story that doesn't make me look decisive, because I don't think the decisive version is true. I left a job that was working. CRISPR guide design, the problem I'd spent years getting good at, was becoming a solved problem &mdash; not because the science had run out, but because the hardest computational questions had already been answered, and what was left was making an already-workable tool friendlier to use. That's real work, and I don't want to undersell it. But it's a specific kind of unglamorous, and after enough of it, I noticed I'd started describing my own job to other people in slightly smaller terms than I used to.</p>
+
+          <p>Somewhere in that stretch, I started paying too much attention to a small biotech that was building CRISPR-based tools for library prep &mdash; a problem I recognized immediately, because I'd been circling versions of it for years. I told myself a story about why it would be different there: a smaller room, a faster clock, more research and less UI polish. I want to be honest that I didn't actually know if that story was true. I knew the biology. I did not know the first thing about what it actually feels like to build a function inside a company that doesn't have one yet. I said yes anyway, because the alternative &mdash; staying comfortable at a job that had quietly stopped stretching me &mdash; felt like the worse risk of the two, even though it was obviously the safer one on paper.</p>
+
+          <h2 id="walking-in">Walking In Without a Map</h2>
+          <p>Here's the thing nobody tells you about joining a startup to do the thing you're already good at: being good at the science buys you almost nothing on day one. I knew CRISPR biology cold &mdash; six or seven years of it, PAM sites and off-target scoring and repair pathways living in my head without effort. What I did not know was how a fifteen-person company decides what to fund, how a term sheet shapes a roadmap, or why a research idea I thought was obviously worth pursuing might quietly die because it didn't map to anything the company was actually being measured on. Nobody warns you that the biology was the easy part. I found that out by getting a few early pitches politely ignored and having to sit with why.</p>
+
+          <p>What made that period survivable, rather than just disorienting, were two people who decided early on that teaching me the rest of it was worth their time.</p>
+
+          <h2 id="keith-jon">Keith, Jon, and Being Taken Seriously Before I'd Earned It</h2>
+          <p>Keith Brown, the founder, and Jon Armstrong, the VP of R&amp;D, were the kind of people you meet a handful of times in a career &mdash; deeply knowledgeable, obviously passionate, and, crucially, generous with both in a way that didn't have to be. They didn't just tell me what the company's vision was. They walked me through why it was the vision, which is a different and much rarer thing. I remember sitting in Jon's office in my first few weeks, watching him get genuinely animated about a sequencing-depth argument I'd assumed I'd have to make to him, not with him. He already had it half-built in his head. He just wanted to see if I'd get there the same way.</p>
+
+          <p>That mattered more than I understood at the time. Being taken seriously by people who didn't yet have proof that you deserved it does something to how you show up afterward. I stopped hedging my ideas in meetings quite so much. I started trusting that if something was wrong with my thinking, Jon or Keith would actually tell me, rather than letting me quietly embarrass myself in front of someone else. That kind of early trust is not something you can manufacture with a mentorship program. It's just two people deciding you're worth their attention before the spreadsheet says so, and it set the tone for how I tried to treat people once I was the one doing the hiring.</p>
+
+          <h2 id="nils-homer">What Nils Homer's Code Taught Me Without Him Knowing It</h2>
+          <p>My actual first assignment was less inspiring than any of that: port over code and documentation from Fulcrum Genomics, a contract bioinformatics shop we'd been leaning on before I joined. Fulcrum's founder and CEO, Nils Homer, is one of the more quietly respected names in bioinformatics &mdash; the kind of person whose tools you've probably used without knowing whose hands built them. I never worked with him directly. I worked with what he'd left behind, which turned out to be its own kind of education.</p>
+
+          <p>Reading someone else's production bioinformatics code, written by someone that good, is not like reading a textbook. Textbooks show you the idea. His codebase showed me the shape of the actual problem underneath the idea &mdash; where the edge cases lived, which assumptions were load-bearing, which parts of a "simple" sequence-analysis script actually needed to be defensive and which didn't. I didn't have a single conversation with him about it. I just spent weeks in his logic, and came out the other side writing differently. That's a strange kind of mentorship &mdash; one-directional, silent, and still one of the most useful things that happened to me that year. It's also the point where I stopped thinking of "porting old code" as a chore and started treating it as the fastest tour available of how someone better than me actually thinks.</p>
+
+          <h2 id="technology">The Technology Underneath Everything Else in This Story</h2>
+          <p>Everything that follows only makes sense if you understand the one idea the whole company was built on, so it's worth pausing here before the story gets more complicated. CRISPRclean&trade; uses CRISPR/Cas enzymes not to edit a genome, but to selectively cut specific double-stranded cDNA molecules during library preparation &mdash; the step before a sample ever reaches a sequencer. A DNA fragment that gets cut loses the adapters it needs to be amplified during PCR. No adapters, no amplification. No amplification, it never gets sequenced. The molecule isn't removed by filtering it out of the data afterward, the way most people assume depletion works. It's removed before it ever becomes data, by a pair of molecular scissors that only cut what you tell them to.</p>
+
+          <p>It's a genuinely elegant mechanism, and the first time I watched it work cleanly on a plate &mdash; the depleted sample's sequencing yield redirected almost entirely toward the transcripts that actually mattered, instead of drowning in the ones that didn't &mdash; I understood immediately why Keith and Jon had built a company around it. The idea is simple enough to explain in a paragraph. Making it work reliably, at the scale a commercial product demands, is a completely different problem, and that difference is where the next four years of my life actually happened.</p>
+
+          <h2 id="thousands-of-guides">From a Handful of Guides to Thousands</h2>
+          <p>Editing a genome in vivo, the thing most people picture when they hear "CRISPR," typically needs three or four good guide RNAs &mdash; you're targeting one gene, maybe a handful of sites near it, and that's the whole design problem. CRISPRclean inverts that completely. You're not editing a gene. You're depleting a defined population of unwanted molecules out of a sequencing library, and that population isn't three or four sequences &mdash; it's thousands of distinct targets, each needing its own guide. The gap between those two numbers is not just "more of the same work." At three or four guides, a person can eyeball the off-target report and use their judgment. At a thousand, judgment doesn't scale &mdash; you need a pipeline that makes the same judgment call correctly, unattended, every single time, across targets you've never manually inspected.</p>
+
+          <p>That last part is easy to state and hard to earn. "Leaves everything else untouched" is not a claim you get to make because your guides look clean on paper. You have to run the depleted and non-depleted libraries side by side, compare per-gene representation across the whole transcriptome, and be willing to find out you were wrong. More than once, I was. A guide panel that looked perfect in silico would come back from a real sequencing run with a subtler footprint on the biology than I'd predicted, and I'd have to go back and ask what my model of "off-target" had missed. I want to be honest that this was some of the most satisfying work of my career &mdash; not despite the repeated correction, but because of it. Being wrong quickly, in a place where the data would tell you so, is a much better way to learn a system than being right slowly.</p>
+
+          <h2 id="building-people">Building People, Not Just Pipelines</h2>
+          <p>None of that scales without a team, and building one from nothing turned out to be a completely different skill than anything my own technical training had prepared me for. I got lucky early &mdash; one of my first hires turned out to be exactly the kind of person you build a team around: reliable in a way that let me stop double-checking her work almost immediately, and thorough in the specific way that meant problems surfaced early instead of at the worst possible moment. She became my right hand within a few months, and a meaningful part of whatever the bioinformatics group became was downstream of that one good call.</p>
+
+          <p>I also made bad calls, and I don't think this story is honest if I skip them. I hired a couple of people straight out of school who were smart on paper and simply weren't ready for the specific ambiguity of a startup &mdash; the absence of a senior person three desks over who already knows the answer, the expectation that you'll figure out the right question before anyone hands it to you. That's not a knock on them. It's a mismatch I should have caught in the interview, and didn't, more than once.</p>
+
+          <p>What I took from both the good calls and the bad ones was a rule I now apply automatically: think medium-term. Long-term hiring &mdash; betting on where someone will be in five years &mdash; is a fiction in a startup, because you can't see five years out yourself, so pretending you can evaluate someone against that horizon is just guessing with extra steps. Short-term hiring is its own trap, because someone who isn't looking past the next few months isn't actually invested in the mess that a real build requires. The habitable middle is someone who's committed for the next year or two of hard, ambiguous work and genuinely wants to be there for it. And the honest math on hiring in a startup is that you will not get every call right. If you get roughly eight in ten right, you are on the path to having a team that survives contact with reality. That's the bar. Not perfection &mdash; durability.</p>
+
+          <h2 id="director-and-ic">Being the Director and Still Being the Person Who Writes the Code</h2>
+          <p>I carried the title Director of R&amp;D, Bioinformatics, and I also spent a very large share of my actual working hours writing pipelines myself, which is not a contradiction, whatever the org chart implies. There's a version of "being a manager" that means stepping back from the work entirely, and I think that version is a mistake at a company this size, at this stage. If you can't sit down and build the thing yourself &mdash; trace the actual logic, hit the actual edge cases, feel where the pipeline gets awkward at 2 a.m. before a deadline &mdash; you lose the ability to teach someone else to build it well, and you lose your own credibility the first time a design decision gets questioned by someone who was in the weeds and you weren't.</p>
+
+          <p>There was also a less romantic reason to stay hands-on: I was the company's principal investigator on the non-dilutive funding that kept a meaningful part of this work alive &mdash; grants and contracts from BARDA, NIH/NHGRI, HaDEA, and the CDC that ultimately added up to more than $25 million. Writing a competitive renewal, or a technical report to a European consortium, requires you to actually understand what happened in the lab that quarter at a level of detail no status update from a direct report fully substitutes for. Being an individual contributor wasn't a nostalgic choice. It was, some weeks, the only way I could honestly sign my name to what I was reporting.</p>
+
+          <h2 id="where-it-went-sideways">Where It Went Sideways</h2>
+          <p>I've been building toward this section the whole time, because I don't think a story about a startup means much if it stops at the parts that worked. A few things went wrong, and looking back, almost all of them trace to the same root cause: we kept reaching for the branch that wouldn't stop moving, while the branch already heavy with fruit sat within arm's reach, mostly ignored.</p>
+
+          <p>The clearest version of this was single-cell RNA-seq depletion. On paper, it should have been one of our more straightforward products &mdash; deplete the abundant, uninformative transcripts that a tool like Cell Ranger or Seurat never actually uses to call cell type, and let researchers recover real signal at a fraction of the sequencing depth. In practice, we set the bar for ourselves too high and let it keep rising without us. Customers ran wildly different tissue types and cell populations, each with its own profile of what counted as "safe to remove." And the classification tools themselves kept changing underneath us &mdash; 10x Genomics iterated on Cell Ranger's own methods while we were mid-validation, which meant the goalposts for "does this actually help downstream analysis" moved more than once during a single development cycle. We were not chasing a fixed target. We were chasing something that had its own reasons to keep moving, and we never fully admitted that to ourselves in time to change strategy.</p>
+
+          <p>Meanwhile, the product that was already working &mdash; ribosomal RNA depletion, the simplest and most universal version of the same underlying chemistry &mdash; was quietly outperforming everything comparable on the market, in a workflow every genomics lab already ran. We should have put the full weight of the company's marketing and sales effort behind it. We didn't, not nearly enough. It became, in time, Jumpcode's highest revenue product by a wide margin, which should have been the tell earlier than it was: the flashiest application of a platform technology is often not where its commercial value actually lands. Sometimes it's the boring, universal version of the same idea, sold into every lab already running the most common assay in the field, and we spent disproportionate energy on the harder, more fragile, more exciting-sounding problem instead.</p>
+
+          <p>The last piece compounds the first two. We made our own product harder to adopt than it needed to be. We put a lot of design energy into optimizing the expensive steps of a workflow and not nearly enough into making the instructions simple enough that a bench scientist could pick up the product and trust it on the first try. A customer deciding whether to adopt a new reagent is not just evaluating whether the chemistry works. They're evaluating whether it's going to make their week harder, and a workflow with too many finicky steps loses that argument even when the underlying science is genuinely better than the alternative. We knew this, in the abstract, the whole time. Knowing it and building for it turned out to be two different disciplines, and we were consistently better at the first than the second.</p>
+
+          <p>If there's a single image I keep coming back to for all three of these, it's the one at the top of this post: one seed, splitting into two branches. One branch keeps drifting just out of reach, and you can convince yourself that closing that gap is the whole job. The other branch is already bearing fruit, right there, and it is remarkably easy to let it sit exactly because it isn't asking for anything. Startups don't run out of ambition. They run out of the discipline to notice which branch is already paying rent.</p>
+
+          <h2 id="who-belongs">Who Actually Belongs at a Startup</h2>
+          <p>I'd take the whole bet again, mistakes included, and if I'm honest that surprises me a little. What I'd look for now, in someone deciding whether to make the same jump, is a short list, and I don't think you can talk yourself into any of it if it isn't already true:</p>
+
+          <p><strong>Willing to take a real career risk.</strong> Not a resume line that reads well in hindsight &mdash; an actual bet, made before you know how the story ends, with a real chance it doesn't pay off.</p>
+
+          <p><strong>Fast on their feet.</strong> Able to learn a new area and pivot without being told to, because nobody at a fifteen-person company has the bandwidth to walk you through a decision twice.</p>
+
+          <p><strong>Genuinely believes research can move faster than it currently does.</strong> Not as a slogan, but as something they'll act on when the easier, slower option is sitting right there.</p>
+
+          <p><strong>Finds the whole thing intellectually fun, not just admirable.</strong> If working hard and smart on a genuinely hard problem doesn't excite you on its own terms, a startup will grind that difference down until it's the only thing you notice.</p>
+
+          <p>I don't think I'd have written any of this the same way if I were still inside it. Some of the clearest lessons here only came into focus with a few months of distance &mdash; which is its own small lesson, I suppose: you don't always get to see the shape of the tree while you're still standing in its shade.</p>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══════════════════════ MORE FROM THE BLOG ═══════════════════════ -->
+  <section class="article__more">
+    <div class="container">
+      <div class="section__header reveal">
+        <div class="section__label">Keep Reading</div>
+        <h2 class="section__title">More From the Blog</h2>
+      </div>
+      <div class="blog__grid">
+        <div class="blog-card reveal">
+          <div class="blog-card__tag">AI &amp; Technology</div>
+          <h3 class="blog-card__title">AI Won't Replace the Bioinformatician &mdash; It'll Change the Job Description</h3>
+          <p class="blog-card__excerpt">Where large language models and automation genuinely help a genomics pipeline &mdash; and where decades of biological judgment still can't be replaced.</p>
+          <div class="blog-card__footer">
+            <span class="blog-card__status">Coming Soon</span>
+          </div>
+        </div>
+        <a class="blog-card blog-card--link reveal" href="the-lone-bioinformatician.html">
+          <div class="blog-card__tag">Career</div>
+          <h3 class="blog-card__title">The Lone Bioinformatician</h3>
+          <p class="blog-card__excerpt">Notes on being the only computational voice at the table &mdash; and how to make sure the science doesn't get lost in translation.</p>
+          <div class="blog-card__footer">
+            <span class="blog-card__read-more">Read Article &rarr;</span>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════ FOOTER ═══════════════════════ -->
+  <footer class="footer">
+    <div class="container footer__inner">
+      <div class="footer__left">
+        <span class="footer__name">Sridhar Ranganathan, Ph.D.</span>
+        <span class="footer__tagline">Bioinformatics &middot; Genomics &middot; AI/ML</span>
+      </div>
+      <div class="footer__links">
+        <a href="../index.html#about">About</a>
+        <a href="../index.html#experience">Experience</a>
+        <a href="../publications/index.html">Publications</a>
+        <a href="../index.html#contact">Contact</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="../main.js"></script>
+</body>
+</html>

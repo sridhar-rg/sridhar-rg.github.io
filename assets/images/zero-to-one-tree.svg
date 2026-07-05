@@ -1,0 +1,154 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 700" role="img" aria-labelledby="cartoonTitle cartoonDesc">
+  <title id="cartoonTitle">A tree grown from one seed, one branch reaching for a target that keeps drifting away while a fruit-heavy branch sits in the shade</title>
+  <desc id="cartoonDesc">An illustration of a tree grown from a single glowing seed at its roots, where two mentors and the author once knelt. One thin branch reaches up toward a target labeled scRNA-seq that keeps drifting further out of reach. A second, sturdier branch hangs heavy with ripe fruit labeled Ribo-Depletion, sitting in shadow, with fruit fallen and going to dust on the ground beneath it while a figure nearby looks away.</desc>
+
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0B0F17" />
+      <stop offset="100%" stop-color="#151D2A" />
+    </linearGradient>
+    <linearGradient id="soil" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1B2530" />
+      <stop offset="100%" stop-color="#0D131B" />
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#22D3EE" stop-opacity="0.55" />
+      <stop offset="100%" stop-color="#22D3EE" stop-opacity="0" />
+    </radialGradient>
+    <radialGradient id="sunGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#A78BFA" stop-opacity="0.18" />
+      <stop offset="100%" stop-color="#A78BFA" stop-opacity="0" />
+    </radialGradient>
+  </defs>
+
+  <rect x="0" y="0" width="1000" height="700" rx="24" fill="url(#sky)" />
+  <circle cx="800" cy="130" r="180" fill="url(#sunGlow)" />
+  <g fill="#E5E9EF" opacity="0.5">
+    <circle cx="120" cy="70" r="1.6" /><circle cx="180" cy="110" r="1.3" /><circle cx="640" cy="55" r="1.5" />
+    <circle cx="900" cy="90" r="1.4" /><circle cx="90" cy="160" r="1.2" /><circle cx="470" cy="40" r="1.3" />
+  </g>
+
+  <rect x="0" y="600" width="1000" height="100" fill="url(#soil)" />
+  <line x1="0" y1="600" x2="1000" y2="600" stroke="#233042" stroke-width="3" />
+
+  <!-- ================= the drifting target, up and to the left of the reaching branch ================= -->
+  <g>
+    <circle cx="175" cy="98" r="30" fill="none" stroke="#22D3EE" stroke-width="2" stroke-dasharray="3 6" opacity="0.22" />
+    <circle cx="162" cy="80" r="32" fill="none" stroke="#22D3EE" stroke-width="2" stroke-dasharray="3 6" opacity="0.4" />
+    <g transform="translate(150,63)">
+      <circle cx="0" cy="0" r="34" fill="url(#glow)" />
+      <circle cx="0" cy="0" r="30" fill="#0D131B" stroke="#22D3EE" stroke-width="3" />
+      <circle cx="0" cy="0" r="21" fill="#1B2530" stroke="#22D3EE" stroke-width="2" />
+      <circle cx="0" cy="0" r="12" fill="#233042" />
+      <circle cx="0" cy="0" r="5" fill="#A78BFA" />
+    </g>
+    <text x="150" y="115" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="15" fill="#22D3EE">scRNA-seq</text>
+    <text x="150" y="133" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="11" fill="#6B7686">(always one branch-length away)</text>
+  </g>
+
+  <!-- ================= trunk ================= -->
+  <path d="M472,600 C478,540 486,480 492,422 L508,422 C514,480 522,540 528,600 Z" fill="#3A4859" />
+  <path d="M472,600 C478,540 486,480 492,422 L500,422 L500,600 Z" fill="#000000" opacity="0.18" />
+
+  <!-- root seed, glowing -->
+  <circle cx="500" cy="602" r="46" fill="url(#glow)" />
+  <ellipse cx="500" cy="606" rx="17" ry="10" fill="#0D131B" stroke="#22D3EE" stroke-width="2.5" />
+  <g stroke="#22D3EE" stroke-width="3" stroke-linecap="round">
+    <line x1="491" y1="598" x2="509" y2="614" />
+    <line x1="509" y1="598" x2="491" y2="614" />
+  </g>
+  <text x="500" y="650" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="12" fill="#6B7686">Day One</text>
+
+  <!-- ================= branch A: thin, reaching, under-tended ================= -->
+  <g fill="none" stroke="#46566A" stroke-linecap="round">
+    <path d="M497,428 L455,368" stroke-width="15" />
+    <path d="M455,368 L410,300" stroke-width="12" />
+    <path d="M410,300 L355,220" stroke-width="9" />
+    <path d="M355,220 L305,150" stroke-width="6" />
+    <path d="M305,150 L282,116" stroke-width="4" />
+  </g>
+  <g fill="#2C8F6C" opacity="0.75">
+    <circle cx="282" cy="116" r="13" /><circle cx="298" cy="128" r="10" /><circle cx="270" cy="134" r="9" />
+    <circle cx="310" cy="150" r="8" opacity="0.6" />
+  </g>
+
+  <!-- ================= branch B: thick, heavy with fruit, sitting in shade ================= -->
+  <g fill="none" stroke="#4A5A6E" stroke-linecap="round">
+    <path d="M505,426 L575,392" stroke-width="18" />
+    <path d="M575,392 L650,362" stroke-width="15" />
+    <path d="M650,362 L725,336" stroke-width="12" />
+    <path d="M725,336 L775,320" stroke-width="8" />
+  </g>
+  <!-- foliage, dense and shaded -->
+  <g fill="#1F9C73" opacity="0.9">
+    <circle cx="700" cy="300" r="30" /><circle cx="745" cy="290" r="34" /><circle cx="790" cy="305" r="28" />
+    <circle cx="720" cy="330" r="26" /><circle cx="765" cy="335" r="30" /><circle cx="810" cy="330" r="22" />
+    <circle cx="680" cy="330" r="20" opacity="0.8" />
+  </g>
+  <rect x="640" y="270" width="220" height="110" fill="#000000" opacity="0.14" />
+  <!-- ripe fruit in the shaded branch -->
+  <g fill="#F4B740">
+    <circle cx="705" cy="312" r="9" /><circle cx="735" cy="298" r="8" /><circle cx="765" cy="316" r="9" />
+    <circle cx="795" cy="300" r="8" /><circle cx="750" cy="335" r="8" /><circle cx="720" cy="345" r="7" />
+  </g>
+  <text x="758" y="245" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="15" fill="#8FAF9E">Ribo-Depletion</text>
+  <text x="758" y="263" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="11" fill="#545F70">(already bearing fruit, left in the shade)</text>
+
+  <!-- fallen, dusty fruit on the ground below the heavy branch -->
+  <g opacity="0.55">
+    <ellipse cx="715" cy="612" rx="12" ry="4" fill="#000000" opacity="0.3" />
+    <circle cx="715" cy="602" r="9" fill="#C99A3E" />
+    <ellipse cx="750" cy="618" rx="10" ry="3.5" fill="#000000" opacity="0.3" />
+    <circle cx="750" cy="609" r="7" fill="#C99A3E" />
+  </g>
+  <g fill="#545F70" opacity="0.6">
+    <circle cx="695" cy="595" r="2" /><circle cx="735" cy="588" r="1.6" /><circle cx="770" cy="600" r="1.8" />
+  </g>
+
+  <!-- ================= human figures ================= -->
+  <!-- root: two mentors and the author tending the seed -->
+  <g transform="translate(410,538)">
+    <path d="M-9 40 L-14 62 M9 40 L13 62" stroke="#D8DEE6" stroke-width="8" stroke-linecap="round" fill="none" />
+    <path d="M-8 6 Q0 -1 9 6 L7 42 L-6 42 Z" fill="#C7CDD6" />
+    <path d="M-3 10 Q14 6 22 -6" stroke="#C7CDD6" stroke-width="7" stroke-linecap="round" fill="none" />
+    <circle cx="1" cy="-12" r="13" fill="#E7B58C" />
+    <path d="M-11 -16 Q1 -30 13 -16 Q7 -22 1 -23 Q-5 -22 -11 -16Z" fill="#2B2119" />
+  </g>
+  <g transform="translate(592,538)">
+    <path d="M-9 40 L-14 62 M9 40 L13 62" stroke="#D8DEE6" stroke-width="8" stroke-linecap="round" fill="none" />
+    <path d="M-8 6 Q0 -1 9 6 L7 42 L-6 42 Z" fill="#B9C1CC" />
+    <path d="M-3 10 Q-16 6 -24 -4" stroke="#B9C1CC" stroke-width="7" stroke-linecap="round" fill="none" />
+    <circle cx="-1" cy="-12" r="13" fill="#D89A6A" />
+    <path d="M-13 -16 Q-1 -29 11 -16 Q5 -21 -1 -22 Q-7 -21 -13 -16Z" fill="#1E1712" />
+  </g>
+  <g transform="translate(500,548)">
+    <path d="M-8 34 L-13 58 M8 34 L12 58" stroke="#EDEFF2" stroke-width="7" stroke-linecap="round" fill="none" />
+    <path d="M-7 4 Q0 -2 8 4 L6 36 L-5 36 Z" fill="#EDEFF2" />
+    <path d="M-2 8 Q-14 16 -18 30" stroke="#EDEFF2" stroke-width="6" stroke-linecap="round" fill="none" />
+    <path d="M6 8 Q16 12 20 26" stroke="#EDEFF2" stroke-width="6" stroke-linecap="round" fill="none" />
+    <circle cx="0" cy="-11" r="11" fill="#F0B48A" />
+    <path d="M-9 -14 Q0 -25 9 -14 Q4 -19 0 -20 Q-4 -19 -9 -14Z" fill="#3A2A1E" />
+  </g>
+  <!-- reaching for the drifting target, up and to the left -->
+  <g transform="translate(300,150)">
+    <path d="M-7 30 Q-14 40 -10 54 M6 30 Q14 42 22 46" stroke="#F4F6F8" stroke-width="8" stroke-linecap="round" fill="none" />
+    <path d="M-6 4 Q0 -2 7 4 L5 32 L-5 32 Z" fill="#F4F6F8" />
+    <path d="M-5 6 Q-20 -8 -34 -28" stroke="#F4F6F8" stroke-width="7" stroke-linecap="round" fill="none" />
+    <path d="M4 8 Q16 14 20 26" stroke="#F4F6F8" stroke-width="7" stroke-linecap="round" fill="none" />
+    <circle cx="0" cy="-10" r="11" fill="#F0B48A" />
+    <path d="M-9 -13 Q0 -24 9 -13 Q4 -18 0 -19 Q-4 -18 -9 -13Z" fill="#3A2A1E" />
+    <circle cx="-5" cy="-9" r="3.5" fill="none" stroke="#22D3EE" stroke-width="1.6" />
+  </g>
+
+  <!-- looking away from the fruit already within reach -->
+  <g transform="translate(678,552)">
+    <path d="M-8 34 L-12 58 M8 34 L12 58" stroke="#DDE2E8" stroke-width="8" stroke-linecap="round" fill="none" />
+    <path d="M-7 4 Q0 -2 7 4 L6 36 L-5 36 Z" fill="#DDE2E8" />
+    <path d="M-2 8 Q-16 6 -22 -4" stroke="#DDE2E8" stroke-width="6" stroke-linecap="round" fill="none" />
+    <path d="M5 8 Q17 18 16 30" stroke="#DDE2E8" stroke-width="6" stroke-linecap="round" fill="none" />
+    <circle cx="10" cy="-11" r="11" fill="#E7B58C" />
+    <path d="M1 -14 Q10 -25 19 -14 Q14 -19 10 -20 Q5 -19 1 -14Z" fill="#2B2119" />
+  </g>
+
+  <text x="500" y="682" text-anchor="middle" font-family="'Space Grotesk', sans-serif" font-size="19" fill="#99A3B3">One seed. Two branches. We kept reaching for the one that kept moving.</text>
+</svg>
