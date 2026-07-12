@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Gradient boosting and convolutional neural networks solve overlapping but distinct problems in CRISPR guide RNA design &mdash; and depletion assays break half the assumptions either one starts with." />
+  <title>Picking a Good Guide RNA at Scale: A Field Guide to Machine Learning for CRISPR Design | Sridhar Ranganathan</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+
+  <!-- ═══════════════════════ NAVIGATION ═══════════════════════ -->
+  <nav class="nav" id="nav">
+    <div class="nav__inner">
+      <a class="nav__logo" href="../index.html">SR</a>
+      <ul class="nav__links" id="navLinks">
+        <li><a href="../index.html#about">About</a></li>
+        <li><a href="../index.html#highlights">Highlights</a></li>
+        <li><a href="../index.html#experience">Experience</a></li>
+        <li><a href="../index.html#work">Featured Work</a></li>
+        <li><a href="../index.html#skills">Skills</a></li>
+        <li><a href="../publications/index.html">Publications</a></li>
+        <li><a href="index.html" class="active">Blog</a></li>
+        <li><a href="../index.html#contact">Contact</a></li>
+      </ul>
+      <button class="nav__toggle" id="navToggle" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ═══════════════════════ ARTICLE HEADER ═══════════════════════ -->
+  <header class="article__header">
+    <div class="container">
+      <a href="index.html" class="article__back reveal">&larr; Back to Blog</a>
+      <div class="reveal">
+        <div class="article__meta">
+          <span class="tag tag--accent">Machine Learning</span>
+          <span class="article__date">July 2026</span>
+          <span class="article__read-time">7 min read</span>
+        </div>
+        <h1 class="article__title">Picking a Good Guide RNA at Scale: A Field Guide to Machine Learning for CRISPR Design</h1>
+        <p class="article__subtitle">Gradient boosting and convolutional neural networks solve overlapping but distinct problems &mdash; and the moment you move from editing a genome to depleting a library, half the assumptions either one starts with stop holding.</p>
+      </div>
+    </div>
+  </header>
+
+  <div class="article__body">
+    <div class="container">
+
+      <div class="article__layout">
+        <aside class="article__toc reveal">
+          <div class="article__toc-label">On This Page</div>
+          <ol>
+            <li><a href="#literature-review">What the Literature Actually Says</a></li>
+            <li><a href="#depletion-vs-editing">Depletion Assays Break Half the Assumptions</a></li>
+            <li><a href="#gradient-boosting">Gradient Boosting: Fast, Interpretable, Data-Efficient</a></li>
+            <li><a href="#deep-cnns">Deep CNNs: Letting the Model Find the Motif</a></li>
+            <li><a href="#loop-paid-off">Where the Loop Paid Off</a></li>
+            <li><a href="#which-wins">So Which One Actually Wins?</a></li>
+          </ol>
+        </aside>
+
+        <div class="article__content">
+
+          <p>Editing a genome usually means designing a handful of guides against one gene. Building a molecular depletion assay meant designing, scoring, and functionally validating tens of thousands of guides at once, against thousands of distinct targets, in pools where every guide's behavior could shift depending on what else was in the tube with it. We ran that as a tight loop &mdash; design computationally, test in the wet lab, feed the results back in &mdash; for two to three cycles per assay, and the only way to make that loop converge quickly was to get serious about which sequence and structural features actually predicted whether a guide would cut well.</p>
+
+          <h2 id="literature-review">What the Literature Actually Says</h2>
+          <p>The last few years have produced a genuinely good body of work on this exact question, and it converges on the same shortlist of features every time: GC content and its position along the protospacer, PAM context, predicted secondary structure and binding free energy, and a handful of positional nucleotide preferences that don't have an obvious mechanistic story but show up in dataset after dataset anyway. Konstantakos et al.'s 2022 review in <em>Nucleic Acids Research</em> is the clearest map of this space I've read: it lays out the feature classes, the tool landscape from hypothesis-driven scoring rules through gradient-boosted trees to deep learning, and benchmarks all of it across six datasets spanning human, mouse, and zebrafish.</p>
+
+          <figure class="article__figure reveal">
+            <img src="../assets/images/ai-crispr-prediction-landscape-konstantakos2022.jpg" alt="Diagram summarizing the CRISPR-Cas9 gRNA efficiency prediction landscape: tasks (on-target/off-target prediction), features (sequence, structural, epigenetic), tool categories (alignment-based, hypothesis-driven, learning-based), and evaluation datasets across human, mouse, and zebrafish." />
+            <figcaption>Adapted from Konstantakos et al., <em>Nucleic Acids Research</em> 50(7), 2022 (CC BY 4.0).</figcaption>
+          </figure>
+
+          <p>The strongest single result in this window is Xiang et al.'s 2021 CRISPRon model, published in <em>Nature Communications</em>. They generated a large new on-target activity dataset in HEK293T cells, merged it with existing public data, and trained a model that beat every prior tool &mdash; DeepHF, DeepSpCas9, Azimuth &mdash; across four independent test sets it had never seen. What makes it a good template isn't just the accuracy gain; it's that the model doesn't pick a side between "sequence-only" and "biophysical" features. It feeds one-hot encoded sequence through convolutional layers and concatenates that with a computed binding free energy term before the fully connected layers make the final call &mdash; a pattern worth stealing regardless of which base algorithm you reach for.</p>
+
+          <h2 id="depletion-vs-editing">Depletion Assays Break Half the Assumptions</h2>
+          <p>Almost all of that literature, including both papers above, is solving in vivo genome editing: pick the best three or four guides against one gene, where "best" means high on-target cutting and vanishingly low off-target risk elsewhere in a diploid genome. CRISPRclean-style depletion is a different design problem wearing the same enzyme. You're not editing anything &mdash; you're using Cas9 cleavage in vitro, before library amplification, to remove a defined population of unwanted cDNA molecules (ribosomal RNA, globin transcripts, whatever's swamping your signal) so they never make it into the sequencing data. That changes the optimization target in three ways. First, you need guides against thousands of sites, not three or four, so per-guide accuracy has to hold up at a scale where hand-curation is impossible. Second, off-target effects that would be a dealbreaker in vivo are irrelevant here &mdash; there's no genome to protect, only a library to clean &mdash; while a <em>false negative</em>, a target that survives cleavage, is the costly failure mode. Third, because every guide in a depletion pool competes for the same Cas9 and reaction volume, you can't score guides independently the way most published models do; you have to weigh PAM site density and steric crowding across the whole pool, and use efficacy predictions to set relative molar ratios rather than a simple pass/fail cutoff.</p>
+
+          <h2 id="gradient-boosting">Gradient Boosting: Fast, Interpretable, Data-Efficient</h2>
+          <p>For a problem shaped like that, gradient boosting regressors are usually the right first tool, and the data backs that up better than the "deep learning wins by default" narrative suggests. XGBoost and LightGBM both handle the tabular, engineered-feature format this problem naturally takes &mdash; GC content, PAM density, thermodynamic scores, transcript abundance from empirical NGS data &mdash; without needing millions of examples to find signal. BoostMEC, a LightGBM-based model published in <em>BMC Bioinformatics</em> in 2022, benchmarked favorably against ten established tools, including several deep learning models, across thirteen external datasets, and its authors point out a real practical advantage: boosted trees hand you interpretable feature importances, so when a batch of guides underperforms you can trace the failure to a specific feature instead of treating the model as a black box. In a design-build-test loop under time pressure, that diagnosability is worth almost as much as raw accuracy.</p>
+
+          <h2 id="deep-cnns">Deep CNNs: Letting the Model Find the Motif</h2>
+          <p>Convolutional neural networks earn their keep when the signal is more subtle than any hand-engineered feature captures &mdash; sequence motifs and positional interactions across the protospacer and PAM that nobody has written down as a formula, because nobody fully knows what they are yet. CRISPRon's architecture illustrates how to do this without discarding domain knowledge: one-hot encode the 30-mer, run it through parallel convolutional filters at multiple kernel widths to catch motifs of different lengths, pool and flatten, then merge that representation with the binding free energy term before fully connected layers predict efficiency.</p>
+
+          <figure class="article__figure reveal">
+            <img src="../assets/images/crispron-cnn-architecture-xiang2021.jpg" alt="CRISPRon model architecture diagram showing one-hot encoded sequence passed through parallel convolutional filters of varying width, pooled and flattened, then merged with a binding free energy term through fully connected layers to predict gRNA efficiency; below, a bar chart shows CRISPRon outperforming DeepHF, DeepSpCas9, and Azimuth on Spearman correlation across four independent test sets." />
+            <figcaption>Adapted from Xiang et al., <em>Nature Communications</em> 12, 3238 (2021) (CC BY 4.0).</figcaption>
+          </figure>
+
+          <p>The tradeoff is exactly what you'd expect: CNNs need real volume to train well, tens of thousands of labeled guides at minimum, and what they learn doesn't hand you an obvious explanation the way a feature-importance plot does. For depletion assay design specifically, that volume comes from pooled cleavage kinetics &mdash; a CNN trained on prior rounds of pooled data can pick up interaction effects between neighboring guides that a per-guide gradient boosting model, by construction, can't see at all.</p>
+
+          <h2 id="loop-paid-off">Where the Loop Paid Off</h2>
+          <p>Two products built on exactly this design loop, both of which ended up published rather than staying internal.</p>
+
+          <p>The first targeted agnostic pathogen detection: pull a nasopharyngeal swab, sequence everything in it, and let the data tell you what's there instead of testing for one pathogen at a time. The problem is that a raw metatranscriptomic library is almost entirely human and bacterial ribosomal RNA &mdash; the pathogen you're actually looking for, especially at low viral load, is a needle buried under that background. The guide set for this assay ran to roughly 13,000 sgRNAs &mdash; 435 against human rRNA and 12,978 against rRNA from 212 bacterial species &mdash; filtered for GC content, homopolymers, and off-target homology, spaced at roughly one guide per 40 bp, and ranked by Azimuth's gradient-boosted efficiency score, the same class of model described above. In clinical nasopharyngeal samples, that guide set depleted 98% of bacterial rRNA and 99% of human rRNA, which translated into up to a 6-fold increase in SARS-CoV-2 read counts and sensitivity matching RT-qPCR out to Ct 35 &mdash; while still leaving the metagenomic data intact enough to type strains and catch co-infections in the same run. It shipped as a peer-reviewed method, not just a product datasheet.</p>
+
+          <figure class="article__figure reveal">
+            <img src="../assets/images/crispr-pathogen-detection-depletion-chan2023.jpg" alt="Four-panel figure showing sequencing read composition before and after CRISPR depletion in a clinical nasopharyngeal sample: stacked bar charts showing eukaryotic rRNA dropping from roughly 71% to under 1% of aligned reads while informative non-rRNA reads rise to over 96%, plus box plots of read composition across many samples with and without depletion." />
+            <figcaption>Chan, Siddique, Desplat, Choi, Ranganathan, et al., <em>Cell Reports Methods</em> 3(5):100463, 2023 (CC BY-NC-ND 4.0).</figcaption>
+          </figure>
+
+          <p>The second applied the same loop to single-cell RNA-seq, where the problem isn't background contamination but a different kind of imbalance: a handful of housekeeping and mitochondrial transcripts soak up most of a cell's sequencing budget, crowding out the lower-abundance transcripts that actually distinguish one cell type from another. Here the guide set was smaller and more targeted, around 4,630 sgRNAs against ribosomal RNA, ribosomal and mitochondrial protein-coding genes, select genomic intervals, and non-variable genes &mdash; selected the same way, using CRISPick's efficiency prediction on top of the same GC, homopolymer, and off-target filters. Depleting under 1% of the transcriptome removed about 58% of aligned reads that weren't telling you anything new, and redirected that sequencing capacity toward the transcripts that were. In PBMC samples, the fraction of informative UMIs roughly doubled &mdash; from 39% to 92% &mdash; and the resulting data resolved five additional immune cell types, including rare populations like cDC1s, that the standard workflow missed entirely.</p>
+
+          <figure class="article__figure reveal">
+            <img src="../assets/images/sccrispr-clean-scrna-seq-pandey2025.jpg" alt="Multi-panel figure showing scCLEAN results: a Sankey diagram showing reads redistributed from targeted intervals toward informative transcriptome after CRISPR depletion; box plots showing lower concentration of UMIs in top expressed genes; and UMAP plots showing five additional immune cell types resolved with scCLEAN that are absent from the standard 10x workflow." />
+            <figcaption>Pandey, Bezney, DeAscanis, Kirsch, Ahmed, Crinklaw, Ranganathan, et al., <em>Nature Communications</em> 16:4664, 2025 (CC BY 4.0).</figcaption>
+          </figure>
+
+          <p>Neither result came from a fundamentally novel algorithm &mdash; both leaned on published, well-validated efficiency scores. What made the difference was treating guide design as a scoring-and-filtering pipeline applied at the scale the assay demanded, then closing the loop with real wet-lab data instead of trusting the prediction and moving on.</p>
+
+          <h2 id="which-wins">So Which One Actually Wins?</h2>
+          <p>The honest answer, and the one the field's own literature keeps landing on, is that it depends on how much data you have and what you need out of the model. Sherkatghanad et al.'s 2023 review in <em>Briefings in Bioinformatics</em> found deep learning pulling ahead once datasets reach the hundreds of thousands of examples, but also documented cases &mdash; BoostMEC among them &mdash; where a well-featured boosted tree model matched or beat far more complex networks while staying interpretable. The best-performing published model in this space, CRISPRon, doesn't choose sides either: it's a CNN wearing a gradient boosting model's favorite feature, binding free energy, as an extra input. That's the approach I'd bet on for any assay where you can afford both a solid feature set and enough data to let a network find what the features missed &mdash; start with gradient boosting for something fast and diagnosable, then layer in a CNN once you have the pooled data volume to earn its keep.</p>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══════════════════════ MORE FROM THE BLOG ═══════════════════════ -->
+  <section class="article__more">
+    <div class="container">
+      <div class="section__header reveal">
+        <div class="section__label">Keep Reading</div>
+        <h2 class="section__title">More From the Blog</h2>
+      </div>
+      <div class="blog__grid">
+        <a class="blog-card blog-card--link reveal" href="zero-to-one-founding-bioinformatics-team.html">
+          <div class="blog-card__tag">Startup Lessons</div>
+          <h3 class="blog-card__title">Zero to One: What Founding a Bioinformatics Team Taught Me</h3>
+          <p class="blog-card__excerpt">On building strategy, infrastructure, and a team from nothing &mdash; and the lessons a large company never forces you to learn.</p>
+          <div class="blog-card__footer">
+            <span class="blog-card__read-more">Read Article &rarr;</span>
+          </div>
+        </a>
+        <a class="blog-card blog-card--link reveal" href="the-lone-bioinformatician.html">
+          <div class="blog-card__tag">Career</div>
+          <h3 class="blog-card__title">The Lone Bioinformatician</h3>
+          <p class="blog-card__excerpt">Notes on being the only computational voice at the table &mdash; and how to make sure the science doesn't get lost in translation.</p>
+          <div class="blog-card__footer">
+            <span class="blog-card__read-more">Read Article &rarr;</span>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════ FOOTER ═══════════════════════ -->
+  <footer class="footer">
+    <div class="container footer__inner">
+      <div class="footer__left">
+        <span class="footer__name">Sridhar Ranganathan, Ph.D.</span>
+        <span class="footer__tagline">Bioinformatics &middot; Genomics &middot; AI/ML</span>
+      </div>
+      <div class="footer__links">
+        <a href="../index.html#about">About</a>
+        <a href="../index.html#experience">Experience</a>
+        <a href="../publications/index.html">Publications</a>
+        <a href="../index.html#contact">Contact</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="../main.js"></script>
+</body>
+</html>
