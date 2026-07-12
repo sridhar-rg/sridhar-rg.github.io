@@ -89,6 +89,38 @@
           <h2 id="gradient-boosting">Gradient Boosting: Fast, Interpretable, Data-Efficient</h2>
           <p>For a problem shaped like that, gradient boosting regressors are usually the right first tool, and the data backs that up better than the "deep learning wins by default" narrative suggests. XGBoost and LightGBM both handle the tabular, engineered-feature format this problem naturally takes &mdash; GC content, PAM density, thermodynamic scores, transcript abundance from empirical NGS data &mdash; without needing millions of examples to find signal. BoostMEC, a LightGBM-based model published in <em>BMC Bioinformatics</em> in 2022, benchmarked favorably against ten established tools, including several deep learning models, across thirteen external datasets, and its authors point out a real practical advantage: boosted trees hand you interpretable feature importances, so when a batch of guides underperforms you can trace the failure to a specific feature instead of treating the model as a black box. In a design-build-test loop under time pressure, that diagnosability is worth almost as much as raw accuracy.</p>
 
+          <span class="tag article__code-label">Pseudocode</span>
+          <pre class="article__code"><code><span class="cm"># 1. Engineer features for every candidate guide</span>
+import pandas as pd
+from lightgbm import LGBMRegressor
+from sklearn.model_selection import train_test_split
+
+def featurize(guide):
+    return {
+        "gc_content":            gc_fraction(guide.seq),
+        "gc_by_position":        positional_gc(guide.seq),
+        "pam_density":           pam_sites_nearby(guide.locus),  <span class="cm"># steric crowding proxy</span>
+        "delta_g_binding":       predict_binding_energy(guide.seq, guide.target),
+        "transcript_abundance":  ngs_abundance.get(guide.target_id, 0.0),
+        "homopolymer_len":       longest_homopolymer(guide.seq),
+    }
+
+features = pd.DataFrame([featurize(g) for g in candidate_guides])
+labels   = pd.Series([g.measured_efficiency for g in candidate_guides])  <span class="cm"># prior wet-lab round</span>
+
+X_train, X_val, y_train, y_val = train_test_split(features, labels, test_size=0.2)
+
+<span class="cm"># 2. Fit a gradient-boosted regressor over the engineered features</span>
+model = LGBMRegressor(n_estimators=500, learning_rate=0.03, max_depth=6, subsample=0.8)
+model.fit(X_train, y_train, eval_set=[(X_val, y_val)], early_stopping_rounds=30)
+
+<span class="cm"># 3. Score and rank every candidate guide in the pool</span>
+ranked = features.assign(score=model.predict(features)).sort_values("score", ascending=False)
+
+<span class="cm"># 4. Feature importances explain *why* a guide underperformed</span>
+importances = pd.Series(model.feature_importances_, index=features.columns)
+print(importances.sort_values(ascending=False))</code></pre>
+
           <h2 id="deep-cnns">Deep CNNs: Letting the Model Find the Motif</h2>
           <p>Convolutional neural networks earn their keep when the signal is more subtle than any hand-engineered feature captures &mdash; sequence motifs and positional interactions across the protospacer and PAM that nobody has written down as a formula, because nobody fully knows what they are yet. CRISPRon's architecture illustrates how to do this without discarding domain knowledge: one-hot encode the 30-mer, run it through parallel convolutional filters at multiple kernel widths to catch motifs of different lengths, pool and flatten, then merge that representation with the binding free energy term before fully connected layers predict efficiency.</p>
 
@@ -96,6 +128,49 @@
             <img src="../assets/images/crispron-cnn-architecture-xiang2021.jpg" alt="CRISPRon model architecture diagram showing one-hot encoded sequence passed through parallel convolutional filters of varying width, pooled and flattened, then merged with a binding free energy term through fully connected layers to predict gRNA efficiency; below, a bar chart shows CRISPRon outperforming DeepHF, DeepSpCas9, and Azimuth on Spearman correlation across four independent test sets." />
             <figcaption>Adapted from Xiang et al., <em>Nature Communications</em> 12, 3238 (2021) (CC BY 4.0).</figcaption>
           </figure>
+
+          <span class="tag article__code-label">Pseudocode</span>
+          <pre class="article__code"><code><span class="cm"># One-hot sequence + binding free energy -&gt; predicted on-target efficiency</span>
+import torch
+import torch.nn as nn
+
+class CRISPRonStyleCNN(nn.Module):
+    def __init__(self, seq_len=30, n_bases=4):
+        super().__init__()
+        <span class="cm"># parallel filters catch motifs of different lengths</span>
+        self.conv3 = nn.Conv1d(n_bases, 100, kernel_size=3)
+        self.conv5 = nn.Conv1d(n_bases, 70,  kernel_size=5)
+        self.conv7 = nn.Conv1d(n_bases, 40,  kernel_size=7)
+        self.pool  = nn.AdaptiveMaxPool1d(1)
+
+        conv_out_dim = 100 + 70 + 40
+        self.fc = nn.Sequential(
+            nn.Linear(conv_out_dim + 1, 80),  <span class="cm"># +1 for delta_g_binding</span>
+            nn.ReLU(),
+            nn.Linear(80, 60),
+            nn.ReLU(),
+            nn.Linear(60, 1),
+        )
+
+    def forward(self, one_hot_seq, delta_g):
+        <span class="cm"># one_hot_seq: (batch, 4, seq_len)</span>
+        f3 = self.pool(torch.relu(self.conv3(one_hot_seq))).squeeze(-1)
+        f5 = self.pool(torch.relu(self.conv5(one_hot_seq))).squeeze(-1)
+        f7 = self.pool(torch.relu(self.conv7(one_hot_seq))).squeeze(-1)
+        combined = torch.cat([f3, f5, f7, delta_g], dim=1)
+        return self.fc(combined)
+
+<span class="cm"># Training loop, conceptually</span>
+model     = CRISPRonStyleCNN()
+optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)
+loss_fn   = nn.MSELoss()
+
+for epoch in range(n_epochs):
+    for seqs, energies, efficiencies in train_loader:
+        optimizer.zero_grad()
+        loss = loss_fn(model(seqs, energies), efficiencies)
+        loss.backward()
+        optimizer.step()</code></pre>
 
           <p>The tradeoff is exactly what you'd expect: CNNs need real volume to train well, tens of thousands of labeled guides at minimum, and what they learn doesn't hand you an obvious explanation the way a feature-importance plot does. For depletion assay design specifically, that volume comes from pooled cleavage kinetics &mdash; a CNN trained on prior rounds of pooled data can pick up interaction effects between neighboring guides that a per-guide gradient boosting model, by construction, can't see at all.</p>
 
