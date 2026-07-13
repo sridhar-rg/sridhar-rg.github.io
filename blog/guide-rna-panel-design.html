@@ -68,7 +68,7 @@
         <div class="article__content">
 
           <figure class="article__figure reveal">
-            <img src="../assets/images/ml-crispr-design-build-test-learn.svg" alt="A five-stage design-build-test-learn loop: Design a candidate guide pool (sequences, molar ratios, target spacing); Build it in pooled depletion reactions (reaction time, temperature, RIN/DIN); Analyze sequencing counts into efficacy and off-target labels; Learn a shared-representation multi-task model that outputs per-guide scores; Select a minimal panel via greedy submodular cover, which reseeds the next round of Design. Learn and Select are highlighted as the two stages this post covers in technical depth." />
+            <img src="../assets/images/ml-crispr-design-build-test-learn.png" alt="A five-stage design-build-test-learn loop: Design a candidate gRNA pool (DNA sequence, molar ratios w_g, spacing); Build it in pooled depletion reactions (reaction time, temp, RIN/DIN, fragment sizes, library quantity); Analyze sequencing counts into labels (efficiency of depletion y_g, off-target depletion z_g); Learn a shared trunk with an efficiency head and an off-target head producing per-guide scores; Select a minimal gRNA panel via greedy submodular cover under a coverage and off-target budget, which feeds back into the next round of Design." />
             <figcaption>Everything below is about two boxes in a five-box loop. The other three &mdash; Design, Build, Analyze &mdash; are what feed them.</figcaption>
           </figure>
 
