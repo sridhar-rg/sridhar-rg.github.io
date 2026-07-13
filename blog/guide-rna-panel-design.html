@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="A multi-task, multi-objective machine learning formulation for designing pooled CRISPR guide RNA panels: labels from raw counts, a shared-representation model for efficacy and off-target risk, and panel selection as submodular set cover." />
+  <title>Designing Guide RNA Panels at Scale: A Multi-Task, Multi-Objective Learning Formulation | Sridhar Ranganathan</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+
+  <!-- ═══════════════════════ NAVIGATION ═══════════════════════ -->
+  <nav class="nav" id="nav">
+    <div class="nav__inner">
+      <a class="nav__logo" href="../index.html">SR</a>
+      <ul class="nav__links" id="navLinks">
+        <li><a href="../index.html#about">About</a></li>
+        <li><a href="../index.html#highlights">Highlights</a></li>
+        <li><a href="../index.html#experience">Experience</a></li>
+        <li><a href="../index.html#work">Featured Work</a></li>
+        <li><a href="../index.html#skills">Skills</a></li>
+        <li><a href="../publications/index.html">Publications</a></li>
+        <li><a href="index.html" class="active">Blog</a></li>
+        <li><a href="../index.html#contact">Contact</a></li>
+      </ul>
+      <button class="nav__toggle" id="navToggle" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ═══════════════════════ ARTICLE HEADER ═══════════════════════ -->
+  <header class="article__header">
+    <div class="container">
+      <a href="index.html" class="article__back reveal">&larr; Back to Blog</a>
+      <div class="reveal">
+        <div class="article__meta">
+          <span class="tag tag--accent">Machine Learning</span>
+          <span class="article__date">July 2026</span>
+          <span class="article__read-time">10 min read</span>
+        </div>
+        <h1 class="article__title">Designing Guide RNA Panels at Scale: A Multi-Task, Multi-Objective Learning Formulation</h1>
+        <p class="article__subtitle">Predicting whether one guide cuts well is a solved-enough problem. Choosing the smallest set of guides that jointly deplete a defined molecular population, without collateral damage elsewhere, is a different problem &mdash; closer to constrained combinatorial optimization than to single-target regression.</p>
+      </div>
+    </div>
+  </header>
+
+  <div class="article__body">
+    <div class="container">
+
+      <div class="article__layout">
+        <aside class="article__toc reveal">
+          <div class="article__toc-label">On This Page</div>
+          <ol>
+            <li><a href="#problem-formulation">Problem Formulation</a></li>
+            <li><a href="#raw-counts-to-labels">From Raw Counts to Labels</a></li>
+            <li><a href="#feature-representation">Sequence, Structure, and a Crowding Hypothesis</a></li>
+            <li><a href="#shared-representation-model">A Shared-Representation Model</a></li>
+            <li><a href="#minimal-panel">From Per-Guide Scores to a Minimal Panel</a></li>
+            <li><a href="#validation">Validation: Group-Wise, Not Guide-Wise</a></li>
+            <li><a href="#where-this-leaves-us">Where This Leaves Us</a></li>
+          </ol>
+        </aside>
+
+        <div class="article__content">
+
+          <figure class="article__figure reveal">
+            <img src="../assets/images/ml-crispr-design-build-test-learn.svg" alt="A five-stage design-build-test-learn loop: Design a candidate guide pool (sequences, molar ratios, target spacing); Build it in pooled depletion reactions (reaction time, temperature, RIN/DIN); Analyze sequencing counts into efficacy and off-target labels; Learn a shared-representation multi-task model that outputs per-guide scores; Select a minimal panel via greedy submodular cover, which reseeds the next round of Design. Learn and Select are highlighted as the two stages this post covers in technical depth." />
+            <figcaption>Everything below is about two boxes in a five-box loop. The other three &mdash; Design, Build, Analyze &mdash; are what feed them.</figcaption>
+          </figure>
+
+          <p>Most published work on CRISPR guide design, including the literature I leaned on in an earlier post, treats guide selection as an independent, per-guide scoring problem: given a target gene, rank candidate guides by predicted on-target efficiency and off-target risk, then take the top few. That framing is correct for genome editing, where you need three or four guides against one locus and each guide's fate is basically unentangled from the others. It breaks down the moment the design problem is &ldquo;deplete a defined population of thousands of molecular species from a sequencing library,&rdquo; because now three things are true simultaneously that aren't true in the single-guide case:</p>
+
+          <ul>
+            <li>Guides interact with each other, spatially and kinetically, at the target site.</li>
+            <li>The panel as a whole &mdash; not any one guide &mdash; is the unit of success.</li>
+            <li>Panel size is itself a cost you're optimizing against, not a free parameter.</li>
+          </ul>
+
+          <p>This is a problem I've formalized and solved in production, but the specifics of that implementation are proprietary, so this post isn't a description of the actual system. What follows is a conceptual walkthrough of the same problem, pitched at the level of the ideas rather than the implementation: the shape the labels have to take, what a defensible model architecture looks like given the covariates involved, and why guide selection itself belongs to a different, well-studied class of optimization problem than the scoring step that feeds it.</p>
+
+          <h2 id="problem-formulation">Problem Formulation</h2>
+          <p>Let <code>G = {g&#8321;, ..., g&#8345;}</code> be a pool of candidate guides against a defined target set <code>T</code> (e.g., the transcripts making up cytoplasmic and mitochondrial rRNA). For each guide <code>g</code>, define:</p>
+
+          <ul>
+            <li><code>x_g</code> &mdash; a feature vector describing the guide and its local genomic context (sequence, GC%, PAM density, predicted binding energy).</li>
+            <li><code>w_g</code> &mdash; the molar ratio of guide <code>g</code>'s RNP in the pool. This is a design variable, not an observation &mdash; it's a dial the experimenter sets, which matters a lot for how you're allowed to model it.</li>
+            <li><code>c</code> &mdash; experiment-level covariates shared by every guide in a given reaction: reaction time, temperature, and input RNA/DNA quality (RIN/DIN).</li>
+            <li><code>y_g</code> &mdash; observed on-target depletion, derived from paired before/after sequencing counts at guide <code>g</code>'s target site.</li>
+            <li><code>z_g</code> &mdash; observed off-target burden, aggregated from read counts at every site in the genome where <code>g</code> has partial homology.</li>
+          </ul>
+
+          <p>The end-to-end goal is not &ldquo;predict <code>y_g</code> well.&rdquo; It's: choose a subset <code>G&#8242; &sube; G</code> that minimizes <code>|G&#8242;|</code> subject to (a) expected depletion of every target in <code>T</code> exceeding some threshold, and (b) aggregate off-target burden staying under budget. That's a constrained set-selection problem sitting downstream of two regression problems. Getting the downstream optimization right requires being honest, upstream, about what <code>y_g</code> and <code>z_g</code> actually measure and what confounds sit inside <code>w_g</code> and <code>c</code>.</p>
+
+          <h2 id="raw-counts-to-labels">From Raw Counts to Labels</h2>
+          <p><code>y_g</code> and <code>z_g</code> both start life as sequencing read counts, and count data has a specific set of failure modes that are easy to ignore if you jump straight to a neural network. Depletion efficiency is naturally expressed as a log fold-change between matched depleted and non-depleted libraries &mdash; <code>log((counts_before + 1) / (counts_after + 1))</code> &mdash; rather than raw counts, because library size varies by orders of magnitude across runs and raw counts aren't comparable without that normalization. Off-target burden has the opposite problem: most off-target sites have near-zero counts, so the label is heavily zero-inflated, and a guide with one catastrophic off-target site should be penalized very differently from one with many mild ones &mdash; an aggregate sum discards exactly the information you need for the panel-level budget constraint in the next section.</p>
+
+          <p>Before reaching for a deep model, it's worth fitting the boring baseline this data format was built for: a negative-binomial GLM per guide, in the tradition of count-based differential expression tools like DESeq2. It won't capture nonlinear sequence effects, but it gives you a dispersion-aware, well-calibrated reference point, and if a fancier model can't beat it, that's a real finding, not a footnote.</p>
+
+          <p>The molar ratio <code>w_g</code> deserves its own paragraph because it's the part of this formulation most likely to be modeled wrong. It's tempting to throw it in as just another feature, but it's a dose, and depletion efficiency should be monotonically non-decreasing in dose &mdash; more RNP targeting a molecule should never <em>reduce</em> the odds of cutting it, all else equal. A model that isn't constrained to respect that can produce plausible-looking test-set numbers while still being unsafe to extrapolate from when someone increases a guide's ratio next design cycle. Both major gradient boosting libraries support this directly &mdash; XGBoost and LightGBM accept a <code>monotone_constraints</code> argument per feature &mdash; and it costs nothing to specify.</p>
+
+          <h2 id="feature-representation">Feature Representation: Sequence, Structure, and a Crowding Hypothesis</h2>
+          <p>The standard feature set &mdash; GC content, positional nucleotide composition, predicted binding free energy &mdash; is well established and I won't re-litigate it here. Two choices are worth being explicit about for this specific problem.</p>
+
+          <p>The first is whether to hand-engineer sequence features or use embeddings from a pretrained genomic foundation model. A 2025 paper on Cas12 activity prediction (Amirabad et al., arXiv:2506.11182) found that embeddings from RNA foundation models, fed into a lightweight regressor head, substantially outperformed hand-engineered baselines &mdash; and that fusing in chromatin accessibility data as a second modality improved results further. That's a reasonable template here too: start with a linear or shallow-GBM head on top of frozen embeddings from a model like DNABERT-2 or the Nucleotide Transformer before deciding hand-engineered features are necessary at all. It also naturally extends to fusing in the experiment-level covariates as a second modality, the same way that paper fused in chromatin accessibility.</p>
+
+          <p>The second is a feature specific to pooled depletion that doesn't show up in single-guide editing literature: local PAM density. The hypothesis, based on how this assay actually behaves, is that Cas9 RNPs targeting closely spaced sites compete for the same stretch of DNA during target search, and that crowding measurably drags down per-guide cleavage efficiency. This is grounded in, but extends beyond, established single-molecule work: Cas9 finds its target partly through one-dimensional diffusion along DNA flanking the PAM, with a search radius on the order of tens of base pairs (Lee &amp; Jeong, <em>BMB Reports</em>, 2025). That literature establishes the search mechanism for a single RNP; it does not directly demonstrate multi-RNP competition effects in a pooled reaction, which is why I'd treat &ldquo;count of PAM sites within the empirically-supported diffusion radius of each candidate site&rdquo; as a feature to test the hypothesis with, not a fact to hard-code in.</p>
+
+          <h2 id="shared-representation-model">A Shared-Representation Model for Efficacy and Off-Target Risk</h2>
+          <p>Efficacy and off-target burden are predicted from overlapping information &mdash; largely the same sequence, the same genomic neighborhood &mdash; so training two fully independent models throws away signal each could lend the other. The standard argument for multi-task learning applies directly: a shared representation, tapped by two heads, regularizes both tasks and is more sample-efficient than two separate models, provided the tasks are actually related rather than adversarial to each other. That caveat matters here, because on-target efficacy and off-target burden are related but not aligned &mdash; a guide can be excellent at cutting its target and terrible at avoiding others &mdash; so a naive shared-loss model risks exactly the kind of task interference recent multi-task boosting work is built to detect and correct for (Emami, Mart&iacute;nez-Mu&ntilde;oz &amp; Hern&aacute;ndez-Lobato, arXiv:2507.11411, 2025, on robust multi-task gradient boosting that explicitly isolates poorly-aligned tasks rather than blending them uniformly).</p>
+
+          <p>Batch-level covariates (reaction time, temperature, RIN/DIN) are a second, orthogonal complication: they vary at the experiment level, not the guide level, which means naively folding them in as ordinary features risks the model learning &ldquo;which experiment this was&rdquo; instead of &ldquo;what these covariates causally do to efficiency&rdquo; &mdash; the same batch-confounding problem single-cell genomics has spent years building tooling for. A mixed-effects framing, treating guide/sequence effects as fixed and experiment identity as a random effect, is the principled fix; recent deep mixed-effects autoencoder work (Andrade, Nguyen &amp; Montillo, arXiv:2411.06635, 2025) is built for exactly this batch-invariant/batch-specific split and is a reasonable architectural reference even outside its original single-cell context.</p>
+
+          <span class="tag article__code-label">Pseudocode</span>
+          <pre class="article__code"><code><span class="cm"># Shared trunk, two heads, monotonic in molar ratio, batch as a random effect</span>
+import torch
+import torch.nn as nn
+
+class GuideMultiTaskModel(nn.Module):
+    def __init__(self, seq_embed_dim=768, n_batch_covariates=3, n_batches=None):
+        super().__init__()
+        <span class="cm"># frozen foundation-model embedding is the input; see arXiv:2506.11182</span>
+        self.trunk = nn.Sequential(
+            nn.Linear(seq_embed_dim + n_batch_covariates, 256),
+            nn.ReLU(),
+            nn.Linear(256, 128),
+            nn.ReLU(),
+        )
+        <span class="cm"># random-effect embedding per experiment batch (fixed vs. random split)</span>
+        self.batch_effect = nn.Embedding(n_batches, 128)
+
+        self.efficacy_head   = nn.Linear(129, 1)   <span class="cm"># +1 for molar ratio w_g</span>
+        self.offtarget_head  = nn.Linear(128, 1)
+
+    def forward(self, seq_embed, batch_covariates, molar_ratio, batch_id):
+        h = self.trunk(torch.cat([seq_embed, batch_covariates], dim=1))
+        h = h + self.batch_effect(batch_id)          <span class="cm"># additive random effect</span>
+
+        efficacy   = self.efficacy_head(torch.cat([h, molar_ratio], dim=1))
+        offtarget  = self.offtarget_head(h)
+        return efficacy, offtarget
+
+<span class="cm"># Monotonicity in molar ratio isn't free in a plain MLP &#8212; enforce it explicitly,</span>
+<span class="cm"># e.g. by parameterizing the molar-ratio contribution through a softplus so its</span>
+<span class="cm"># derivative can't go negative, rather than trusting the optimizer to find it.</span>
+
+loss = w_efficacy * mse(efficacy_pred, y_g) + w_offtarget * nb_nll(offtarget_pred, z_g)
+<span class="cm"># nb_nll: negative binomial NLL, not MSE &#8212; z_g is zero-inflated count data</span></code></pre>
+
+          <h2 id="minimal-panel">From Per-Guide Scores to a Minimal Panel</h2>
+          <p>This is the step that's easy to skip and shouldn't be. Once every candidate guide has a predicted efficacy and off-target score, selecting the panel is not &ldquo;take the top <em>k</em>.&rdquo; It's choosing the smallest guide set that jointly covers every target molecule to a required depth, which is a set cover problem, and set cover is NP-hard in general &mdash; but the specific structure here works in our favor. Define a coverage function <code>f(G&#8242;)</code> over the selected panel <code>G&#8242;</code> as the expected fraction of the target population depleted. Because adding a guide that targets an already-well-covered molecule yields less benefit than adding one that covers something nobody else does, <code>f</code> is submodular: it has diminishing marginal returns. That's exactly the structural property the classic Nemhauser&ndash;Wolsey&ndash;Fisher result (1978) exploits &mdash; a simple greedy algorithm, at each step adding whichever guide has the highest marginal coverage gain per unit cost, is guaranteed to reach within a factor of <code>(1 &minus; 1/e) &approx; 63%</code> of the optimal coverage for any budget, which is the best any polynomial-time algorithm can guarantee in general. A 2023 result (Chen &amp; Crawford, arXiv:2309.14558) extends this to a bicriteria setting &mdash; useful here, since we have two constraints (coverage floor and off-target ceiling) rather than one.</p>
+
+          <span class="tag article__code-label">Pseudocode</span>
+          <pre class="article__code"><code><span class="cm"># Greedy submodular cover with an off-target budget constraint</span>
+def select_panel(candidates, targets, coverage_floor=0.99, offtarget_budget=B):
+    selected, covered = set(), defaultdict(float)
+    offtarget_spent = 0.0
+
+    while coverage(covered, targets) &lt; coverage_floor:
+        best_guide, best_ratio = None, -math.inf
+
+        for g in candidates - selected:
+            marginal_gain = coverage_gain(g, covered, targets)   <span class="cm"># diminishing returns</span>
+            cost = 1.0 + offtarget_penalty(g)                    <span class="cm"># cost = 1 guide + risk</span>
+            ratio = marginal_gain / cost                          <span class="cm"># cost-benefit greedy</span>
+
+            if (offtarget_spent + offtarget_penalty(g) &lt;= offtarget_budget
+                    and ratio &gt; best_ratio):
+                best_guide, best_ratio = g, ratio
+
+        if best_guide is None:
+            break  <span class="cm"># budget exhausted before coverage target met &#8212; a real, reportable outcome</span>
+
+        selected.add(best_guide)
+        offtarget_spent += offtarget_penalty(best_guide)
+        update_coverage(covered, best_guide, targets)
+
+    return selected  <span class="cm"># within (1 - 1/e) of optimal coverage for this budget, by construction</span></code></pre>
+
+          <p>The part of this that's easy to get wrong is <code>coverage_gain</code>: it has to account for guides that partially overlap in what they cover &mdash; two guides 15 bp apart on the same transcript are not independent evidence, and treating them as if they were will make the greedy algorithm overcount coverage and under-select the panel. In practice this means <code>coverage_gain</code> should be computed against the fragment-length distribution of the library prep &mdash; since fragmentation is close to a random process, a target region gets reliably depleted only if a cut site survives on most fragments spanning it, which is a function of both cut-site spacing and expected fragment length, not guide count alone.</p>
+
+          <h2 id="validation">Validation: Group-Wise, Not Guide-Wise</h2>
+          <p>Standard k-fold cross-validation, splitting at the level of individual guides, will silently leak information here, because guides from the same experiment share the same batch covariates and the same molar-ratio design. The correct unit for a held-out fold is the experiment, not the guide &mdash; group k-fold, grouped on batch ID &mdash; otherwise the reported accuracy is partly measuring &ldquo;did the model memorize this batch&rdquo; rather than &ldquo;does it generalize to a new reaction.&rdquo;</p>
+
+          <p>&ldquo;How good is it&rdquo; isn't one question here &mdash; the two heads and the selection step fail in different ways and need different metrics to catch them:</p>
+
+          <ul>
+            <li><strong>Efficacy head.</strong> Report Spearman &rho; between predicted and observed log fold-change, the same convention the CRISPRon literature uses, so results are comparable to published on-target models rather than sitting in a metric of one. R&sup2; alone is a weak diagnostic for this task because it rewards getting the bulk of guides roughly right while hiding systematic error at the tails &mdash; bin predictions into deciles and plot predicted vs. observed mean per bin to check calibration directly, since a panel built on a mis-calibrated top decile is the failure mode that actually costs you a re-synthesis cycle.</li>
+            <li><strong>Off-target head.</strong> <code>z_g</code> is zero-inflated, so the useful framing is two-part: a binary classifier for &ldquo;does this guide have any off-target site above an actionable threshold,&rdquo; scored with <strong>both</strong> ROC-AUC and PR-AUC &mdash; PR-AUC is the one to trust here, since most candidate guides are off-target-clean and ROC-AUC is well known to look optimistic under exactly that kind of class imbalance &mdash; plus a conditional calibration check of predicted severity restricted to the guides flagged positive.</li>
+            <li><strong>Panel selection.</strong> This needs a metric the regression metrics can't give you: run the greedy selection on <em>held-out</em> target sets (not ones the scoring model trained on) and report the empirical coverage achieved against both the required threshold <code>&tau;</code> and the theoretical <code>(1 &minus; 1/e)</code> bound. Separately report panel size relative to two baselines &mdash; uniform molar ratio with no learned scoring, and naive top-k selection that ignores redundancy between closely spaced guides &mdash; since &ldquo;smaller panel, same coverage&rdquo; is the actual business metric, and neither AUC nor Spearman &rho; speaks to it directly.</li>
+          </ul>
+
+          <p>None of these numbers mean much as single point estimates given how few independent experiments this kind of assay typically has. Bootstrap over held-out batches (not guides) to get confidence intervals on all three sets of metrics, and use a paired test &mdash; paired bootstrap or Wilcoxon signed-rank across held-out target sets, rather than an unpaired test across guides &mdash; when comparing a model-selected panel against a baseline, since panels from the same target set are correlated by construction and treating them as independent samples overstates significance.</p>
+
+          <p>A model with excellent guide-level Spearman &rho; that produces panels which underperform their theoretical coverage bound on new targets is telling you the error is compounding somewhere between prediction and selection, not that either piece is individually broken &mdash; which is the whole reason to track these as three separate report cards instead of one aggregate score.</p>
+
+          <h2 id="where-this-leaves-us">Where This Leaves Us</h2>
+          <p>None of the individual pieces here are novel &mdash; multi-task learning, monotonic gradient boosting, mixed-effects representations, and greedy submodular optimization are all established, separately well-studied techniques. What's specific to this problem is how they compose: the regression step has to produce scores that are honest enough &mdash; well-calibrated, monotonic where physics demands it, appropriately uncertain about batch effects &mdash; for the combinatorial step built on top of them to inherit a real approximation guarantee instead of a false sense of one. Get the label definition or the batch-confounding handling wrong upstream, and the elegant (1 &minus; 1/e) bound downstream is a guarantee about the wrong quantity. That composition, more than either half alone, is the actual engineering problem.</p>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══════════════════════ MORE FROM THE BLOG ═══════════════════════ -->
+  <section class="article__more">
+    <div class="container">
+      <div class="section__header reveal">
+        <div class="section__label">Keep Reading</div>
+        <h2 class="section__title">More From the Blog</h2>
+      </div>
+      <div class="blog__grid">
+        <a class="blog-card blog-card--link reveal" href="ai-for-crispr-design.html">
+          <div class="blog-card__tag">Machine Learning</div>
+          <h3 class="blog-card__title">Picking a Good Guide RNA at Scale: A Field Guide to Machine Learning for CRISPR Design</h3>
+          <p class="blog-card__excerpt">Gradient boosting and convolutional neural networks solve overlapping but distinct problems &mdash; and depletion assays break half the assumptions either one starts with.</p>
+          <div class="blog-card__footer">
+            <span class="blog-card__read-more">Read Article &rarr;</span>
+          </div>
+        </a>
+        <a class="blog-card blog-card--link reveal" href="zero-to-one-founding-bioinformatics-team.html">
+          <div class="blog-card__tag">Startup Lessons</div>
+          <h3 class="blog-card__title">Zero to One: What Founding a Bioinformatics Team Taught Me</h3>
+          <p class="blog-card__excerpt">On building strategy, infrastructure, and a team from nothing &mdash; and the lessons a large company never forces you to learn.</p>
+          <div class="blog-card__footer">
+            <span class="blog-card__read-more">Read Article &rarr;</span>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════ FOOTER ═══════════════════════ -->
+  <footer class="footer">
+    <div class="container footer__inner">
+      <div class="footer__left">
+        <span class="footer__name">Sridhar Ranganathan, Ph.D.</span>
+        <span class="footer__tagline">Bioinformatics &middot; Genomics &middot; AI/ML</span>
+      </div>
+      <div class="footer__links">
+        <a href="../index.html#about">About</a>
+        <a href="../index.html#experience">Experience</a>
+        <a href="../publications/index.html">Publications</a>
+        <a href="../index.html#contact">Contact</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="../main.js"></script>
+</body>
+</html>
